@@ -1,4 +1,7 @@
 
+using Microsoft.EntityFrameworkCore;
+using RATSP.API.Repositories;
+
 namespace RATSP.API;
 
 public class Program
@@ -6,7 +9,30 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        
+        builder.Services.AddDbContext<AppDbContext>(options =>
+        {
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnection"));
+        });
+        
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowSpecificOrigin",
+                builder =>
+                {
+                    builder.WithOrigins("https://localhost:7197")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+        });
 
+        builder.Services.AddControllers().AddNewtonsoftJson(options =>
+        {
+            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+        });
+        
+        builder.Services.AddTransient<CompaniesRepository>();
+        
         // Add services to the container.
         builder.Services.AddAuthorization();
 
@@ -15,6 +41,8 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
+        
+        app.UseCors("AllowSpecificOrigin");
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -24,28 +52,12 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+        
+        app.UseRouting();
 
         app.UseAuthorization();
-
-        var summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-        {
-            var forecast =  Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                {
-                    Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    TemperatureC = Random.Shared.Next(-20, 55),
-                    Summary = summaries[Random.Shared.Next(summaries.Length)]
-                })
-                .ToArray();
-            return forecast;
-        })
-        .WithName("GetWeatherForecast")
-        .WithOpenApi();
+        
+        app.MapControllers();
 
         app.Run();
     }
