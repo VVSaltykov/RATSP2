@@ -1,0 +1,142 @@
+﻿@using RATSP.Common.Definitions.Enums
+@using RATSP.Common.Models
+@using EnumExtensions = RATSP.WebCommon.Utils.EnumExtensions
+
+@using RATSP.WebCommon.Utils
+@inject DialogService DialogService
+
+<RadzenTemplateForm TItem="Company" Data="@Company" Submit="@Close">
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Название"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Company.Name" Name="Name"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Номер"/>
+        </div>
+        <div class="col">
+            <RadzenNumeric @bind-Value="Company.Number" Name="Number" />
+            <ValidationMessage For="() => Company.Number" />
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Участие в РАТСП"/>
+        </div>
+        <div class="col">
+            <RadzenDropDown @bind-Value="@Company.Participation"
+                            Data="@_enumDisplayItems"
+                            TextProperty="DisplayName"
+                            ValueProperty="Value"
+                            Name="Role"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Позиция"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Company.Position" Name="Position"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="ФИО"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Company.FIO" Name="FIO"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="ИНН"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Company.INN" Name="INN"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="КПП"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Company.KPP" Name="KPP"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Р/С"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Company.PC" Name="PC"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Название банка"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Company.BankName" Name="BankName"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="БИК"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Company.BIK" Name="BIK"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="К/С"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Company.KC" Name="KC"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Юридический адрес"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Company.Address" Name="Address"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Почтовый адрес"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@Company.MailAddress" Name="MailAddress"/>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-3"></div>
+        <div class="col-md-6 text-center">
+            <RadzenButton ButtonType="ButtonType.Submit" Icon="check_circle" ButtonStyle="ButtonStyle.Success" Text="Сохранить!"/>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</RadzenTemplateForm>
+
+@code {
+    [Parameter] public Company Company { get; set; }
+    
+    private List<EnumDisplayItem<Participation>> _enumDisplayItems;
+    
+    protected override void OnInitialized()
+    {
+        _enumDisplayItems = EnumExtensions.GetFilteredEnumDisplayItems<Participation>(participation => participation == Participation.Yes
+                                                                                                       || participation == Participation.No);
+    }
+    
+    private void Close(Company model)
+    {
+        DialogService.Close(model);
+    }
+}

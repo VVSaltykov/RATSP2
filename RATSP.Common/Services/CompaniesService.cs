@@ -42,4 +42,9 @@ public class CompaniesService : ICompaniesService
             return null;
         }
     }
+
+    public async Task Update(Company company)
+    {
+        await _companiesService.Update(company);
+    }
 }

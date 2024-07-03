@@ -10,4 +10,7 @@ public interface ICompaniesService
 
     [Post("/api/Companies/ReadAll")]
     Task<List<Company>?> Read();
+
+    [Post("/api/Companies/Update")]
+    Task Update(Company company);
 }

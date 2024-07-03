@@ -21,6 +21,12 @@ public class CompaniesController : ControllerBase
         await CompaniesRepository.Create(company);
     }
     
+    [HttpPost("Update")]
+    public async Task Update(Company company)
+    {
+        await CompaniesRepository.Update(company);
+    }
+    
     [HttpPost("ReadAll")]
     public async Task<List<Company>?> Read()
     {

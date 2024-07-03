@@ -2,10 +2,12 @@
 @using RATSP.Common.Interfaces
 @using RATSP.Common.Models
 @using RATSP.WebClient.Pages.Modals
+@using RATSP.WebCommon.Utils
 @inject ICompaniesService ICompaniesService
 @inject DialogService DialogService
+@inject NotificationService NotificationService
 
-<RadzenDataGrid Data="@companies" AllowFiltering=true ColumnWidth="300px" AllowColumnPicking=@WithColumnPicker>
+<RadzenDataGrid Data="@companies" AllowFiltering=true ColumnWidth="300px" AllowColumnPicking=@WithColumnPicker RowSelect="@((Company company) => OnRowSelect(company))">
     <HeaderTemplate>
         <RadzenButton Text="Создать компанию" Click="@OpenCreateDialog"  />
     </HeaderTemplate>
@@ -29,6 +31,12 @@
         companies = await ICompaniesService.Read();
     }   
     
+    private async Task LoadCompanies()
+    {
+        companies = await ICompaniesService.Read();
+        StateHasChanged(); // Ensure UI refreshes with the new data
+    }
+    
     private async Task OpenCreateDialog()
     {
         try
@@ -39,9 +47,31 @@
             {
                 Company company = (Company)result;
                 await ICompaniesService.Create(company);
-                StateHasChanged();
+                await LoadCompanies();
             }
         }
         catch (Exception ex) {}
+    }
+    
+    private async Task OnRowSelect(Company company)
+    {
+        var mirrorCompany = company.Clone();
+        var result = await DialogService.OpenAsync<CompanyDetails>("Просмотр данных компании",
+            new Dictionary<string, object> { { "Company", mirrorCompany } });
+        
+        if (result != null)
+        {
+            if (!ObjectExtensions.ArePropertiesEqual(company, mirrorCompany))
+            {
+                company = mirrorCompany;
+                await ICompaniesService.Update(company);
+                await LoadCompanies();
+                NotificationService.ShowNotification("Внимание!", "Данные компании были обновлены!", NotificationSeverity.Warning);
+            }
+            else
+            {
+                StateHasChanged();
+            }
+        }
     }
 }
