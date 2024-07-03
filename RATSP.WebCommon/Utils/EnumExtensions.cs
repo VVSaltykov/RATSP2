@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using RATSP.WebCommon.Models;
 
 namespace RATSP.WebCommon.Utils;
 
@@ -26,9 +27,4 @@ public static class EnumExtensions
             })
             .ToList();
     }
-}
-public class EnumDisplayItem<T>
-{
-    public T Value { get; set; }
-    public string DisplayName { get; set; }
 }
