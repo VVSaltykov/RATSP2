@@ -1,7 +1,62 @@
 ﻿@page "/"
+@using NPOI.SS.UserModel
+@using NPOI.XSSF.UserModel
+@using System.IO
 
-<PageTitle>Home</PageTitle>
+<RadzenCard Style="width: 100%; max-width: 400px; margin: 20px auto;">
+    <RadzenContent>
+        <InputFile OnChange="OnFileChange" Accept=".xls,.xlsx" />
+        <RadzenButton Text="Загрузить" Click="OnFileUpload" Disabled="@(!fileSelected)" />
+    </RadzenContent>
+</RadzenCard>
 
-<h1>Hello, world!</h1>
+@code {
+    private IBrowserFile selectedFile;
+    private bool fileSelected => selectedFile != null;
 
-Welcome to your new app.
+    private void OnFileChange(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        StateHasChanged();
+    }
+
+    private async Task OnFileUpload()
+    {
+        if (selectedFile != null)
+        {
+            try
+            {
+                // Выводим информацию о выбранном файле
+                Console.WriteLine($"File name: {selectedFile.Name}");
+                Console.WriteLine($"File size: {selectedFile.Size} bytes");
+                Console.WriteLine($"Content type: {selectedFile.ContentType}");
+
+                using var stream = new MemoryStream();
+                await selectedFile.OpenReadStream().CopyToAsync(stream);
+                stream.Position = 0; // Сбрасываем позицию в начале потока
+
+                // Проверяем, что файл является допустимым Excel файлом
+                if (selectedFile.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                {
+                    // Обработка файла Excel с использованием NPOI
+                    IWorkbook workbook = new XSSFWorkbook(stream);
+                    ISheet sheet = workbook.GetSheetAt(0); // Предполагаем, что вас интересует первый лист
+
+                    // Пример чтения данных из первой ячейки
+                    IRow row = sheet.GetRow(0); // Первая строка
+                    ICell cell = row.GetCell(0); // Первая ячейка
+                    string cellValue = cell.ToString();
+                    Console.WriteLine($"Значение первой ячейки: {cellValue}");
+                }
+                else
+                {
+                    Console.WriteLine("Выбранный файл не является допустимым Excel файлом в формате .xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при обработке файла: {ex.Message}");
+            }
+        }
+    }
+}
