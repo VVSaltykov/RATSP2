@@ -32,6 +32,7 @@ public class Program
         });
         
         builder.Services.AddTransient<CompaniesRepository>();
+        builder.Services.AddTransient<FractionRepository>();
         
         // Add services to the container.
         builder.Services.AddAuthorization();
