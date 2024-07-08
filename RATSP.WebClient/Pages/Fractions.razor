@@ -1,0 +1,86 @@
+﻿@page "/Fractions"
+@using System.Globalization
+@using RATSP.Common.Interfaces
+@using RATSP.Common.Models
+@using RATSP.WebClient.Pages.Modals
+@inject DialogService DialogService
+@inject IFractionsService IFractionService
+@inject ICompaniesService ICompaniesService
+@layout MainLayout
+
+<RadzenButton Text="Создать компанию" Click="@OpenCreateDialog" />
+
+@if (FractionsList.Any())
+{
+    <RadzenGrid Data="@FractionsList.GroupBy(f => f.Company.Name)" TItem="IGrouping<string, Fraction>">
+        <Columns>
+            <RadzenGridColumn TItem="IGrouping<string, Fraction>" Property="Key" Title="Компания" >
+                <Template Context="companyGroup">
+                    @companyGroup.Key
+                </Template>
+            </RadzenGridColumn>
+
+            @foreach (var dateRange in DateRanges)
+            {
+                <RadzenGridColumn TItem="IGrouping<string, Fraction>" Title="@($"{dateRange.Start:yyyy-MM} - {dateRange.End:yyyy-MM}")">
+                    <Template Context="companyGroup">
+                        @{
+                            var matchedFraction = companyGroup.FirstOrDefault(f => f.Start == dateRange.Start && f.End == dateRange.End);
+                        }
+                        @if (matchedFraction != null)
+                        {
+                            @matchedFraction.Value
+                        }
+                    </Template>
+                </RadzenGridColumn>
+            }
+        </Columns>
+    </RadzenGrid>
+}
+else
+{
+    <p>Нет данных для отображения.</p>
+}
+
+@code {
+    private List<Fraction> FractionsList = new List<Fraction>();
+    private List<(DateOnly Start, DateOnly End)> DateRanges = new List<(DateOnly Start, DateOnly End)>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        FractionsList = await IFractionService.Read();
+        
+        DateRanges = FractionsList
+            .Select(f => (f.Start, f.End))
+            .Distinct()
+            .OrderByDescending(d => d.Start)
+            .ThenByDescending(d => d.End)
+            .ToList();
+    }
+
+    private async Task OpenCreateDialog()
+    {
+        try
+        {
+            var result = await DialogService.OpenAsync<CreateFraction>("Создание доли");
+        
+            if (result != null)
+            {
+                Fraction fraction = (Fraction)result;
+                await IFractionService.Create(fraction);
+                // Обновить список после создания новой фракции
+                FractionsList = await IFractionService.Read();
+                DateRanges = FractionsList
+                    .Select(f => (f.Start, f.End))
+                    .Distinct()
+                    .OrderByDescending(d => d.Start)
+                    .ThenByDescending(d => d.End)
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Обработка ошибки (можно добавить логирование)
+        }
+    }
+}

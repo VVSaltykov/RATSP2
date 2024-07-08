@@ -1,0 +1,71 @@
+﻿@using RATSP.Common.Interfaces
+@using RATSP.Common.Models
+@using RATSP.WebCommon.Utils
+@inject ICompaniesService ICompaniesService
+@inject NotificationService NotificationService
+@inject DialogService DialogService
+@layout MainLayout
+
+<RadzenTemplateForm TItem="Fraction" Data="@Fraction" Submit="@SubmitForm">
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Компания"/>
+        </div>
+        <div class="col">
+            <RadzenDropDown @bind-Value="SelectedCompanyId" Data="@Companies" TextProperty="Name" ValueProperty="Id" Name="Company" />
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Начало"/>
+        </div>
+        <div class="col">
+            <RadzenDatePicker @bind-Value="@Fraction.Start" Name="Start" />
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Конец"/>
+        </div>
+        <div class="col">
+            <RadzenDatePicker @bind-Value="@Fraction.End" Name="End" />
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Значение"/>
+        </div>
+        <div class="col">
+            <RadzenNumeric @bind-Value="@Fraction.Value" Name="Value" />
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-3"></div>
+        <div class="col-md-6 text-center">
+            <RadzenButton ButtonType="ButtonType.Submit" Icon="check_circle" ButtonStyle="ButtonStyle.Success" Text="Создать!"/>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</RadzenTemplateForm>
+
+@code {
+    private Fraction Fraction { get; set; } = new();
+    private List<Company> Companies = new List<Company>();
+    private Guid SelectedCompanyId { get; set; }
+    
+    protected override async void OnInitialized()
+    {
+        Companies = await ICompaniesService.Read();
+    }
+    
+    private void SubmitForm(Fraction model)
+    {
+        var selectedCompany = Companies.FirstOrDefault(c => c.Id == SelectedCompanyId);
+        if (selectedCompany != null)
+        {
+            Fraction.CompanyId = selectedCompany.Id;
+        }
+        NotificationService.ShowNotification("Успешно!", "Компания создана!", NotificationSeverity.Success);
+        DialogService.Close(model);
+    }
+}

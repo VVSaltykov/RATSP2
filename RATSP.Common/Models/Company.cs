@@ -17,6 +17,6 @@ public class Company : BaseEntity<Guid>
     public string? KC { get; set; }
     public string? Address { get; set; }
     public string? MailAddress { get; set; }
-    
-    public Fraction Fraction { get; set; }
+
+    public List<Fraction>? Fractions { get; set; } = new List<Fraction>();
 }

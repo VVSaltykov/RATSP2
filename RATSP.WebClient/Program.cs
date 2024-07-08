@@ -17,6 +17,7 @@ public class Program
         builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7173") });
         
         builder.Services.AddTransient<ICompaniesService, CompaniesService>();
+        builder.Services.AddTransient<IFractionsService, FractionsService>();
         
         builder.Services.AddScoped<DialogService>();
         builder.Services.AddScoped<NotificationService>();
