@@ -2,6 +2,7 @@
 @using NPOI.SS.UserModel
 @using NPOI.XSSF.UserModel
 @using System.IO
+@using RATSP.WebCommon.Models
 
 <RadzenCard Style="width: 100%; max-width: 400px; margin: 20px auto;">
     <RadzenContent>
@@ -13,6 +14,8 @@
 @code {
     private IBrowserFile selectedFile;
     private bool fileSelected => selectedFile != null;
+    
+    private List<ExcelValues> excelValuesList { get; set; } = new List<ExcelValues>();
 
     private void OnFileChange(InputFileChangeEventArgs e)
     {
@@ -26,36 +29,65 @@
         {
             try
             {
-                // Выводим информацию о выбранном файле
-                Console.WriteLine($"File name: {selectedFile.Name}");
-                Console.WriteLine($"File size: {selectedFile.Size} bytes");
-                Console.WriteLine($"Content type: {selectedFile.ContentType}");
-
                 using var stream = new MemoryStream();
                 await selectedFile.OpenReadStream().CopyToAsync(stream);
-                stream.Position = 0; // Сбрасываем позицию в начале потока
+                stream.Position = 0;
 
-                // Проверяем, что файл является допустимым Excel файлом
                 if (selectedFile.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                 {
-                    // Обработка файла Excel с использованием NPOI
                     IWorkbook workbook = new XSSFWorkbook(stream);
-                    ISheet sheet = workbook.GetSheetAt(0); // Предполагаем, что вас интересует первый лист
+                    ISheet sheet = workbook.GetSheetAt(0);
+                    
+                    for (int i = 2; i <= sheet.LastRowNum; i++)
+                    {
+                        IRow row = sheet.GetRow(i);
 
-                    // Пример чтения данных из первой ячейки
-                    IRow row = sheet.GetRow(0); // Первая строка
-                    ICell cell = row.GetCell(0); // Первая ячейка
-                    string cellValue = cell.ToString();
-                    Console.WriteLine($"Значение первой ячейки: {cellValue}");
+                        if (row != null)
+                        {
+                            ExcelValues excelValues = new ExcelValues
+                            {
+                                Number = row.GetCell(0)?.ToString(),
+                                Insurer = row.GetCell(1)?.ToString(),
+                                Policyholder = row.GetCell(2)?.ToString(),
+                                ContractNumber = row.GetCell(3)?.ToString(),
+                                StartDate = row.GetCell(4)?.ToString(),
+                                EndDate = row.GetCell(5)?.ToString(),
+                                Currency = row.GetCell(6)?.ToString(),
+                                InsuranceAmount_LiabilityLimit = row.GetCell(7)?.ToString(),
+                                AccruedBonus100 = row.GetCell(8)?.ToString(),
+                                GrossPremium = row.GetCell(9)?.ToString(),
+                                ReinsurerCommission = row.GetCell(10)?.ToString(),
+                                ReinsurerCommissionPercent = row.GetCell(11)?.ToString(),
+                                AdministratorCommissionPercent = row.GetCell(12)?.ToString(),
+                                AdministratorCommission = row.GetCell(13)?.ToString(),
+                                NetPremium = row.GetCell(14)?.ToString(),
+                                PremiumPercent = row.GetCell(15)?.ToString(),
+                                PaymentRate_ReturnRate = row.GetCell(16)?.ToString(),
+                                RefundPremium = row.GetCell(17)?.ToString(),
+                                AdministratorCommissionRub = row.GetCell(18)?.ToString(),
+                                SanctionsRisk = row.GetCell(19)?.ToString(),
+                                ReinsurerFraction = row.GetCell(20)?.ToString(),
+                                PaymentDate = row.GetCell(21)?.ToString(),
+                                PaymentSumm = row.GetCell(22)?.ToString(),
+                                PaymentNumber = row.GetCell(23)?.ToString(),
+                                Comment = row.GetCell(24)?.ToString(),
+                                InsuranceType = row.GetCell(25)?.ToString(),
+                                PaymentContract = row.GetCell(26)?.ToString(),
+                            };
+
+                            excelValuesList.Add(excelValues);
+                        }
+                    }
+                    Console.WriteLine("Данные заполнены");
                 }
                 else
                 {
-                    Console.WriteLine("Выбранный файл не является допустимым Excel файлом в формате .xlsx");
+                    Console.WriteLine("The selected file is not a valid Excel file in .xlsx format");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка при обработке файла: {ex.Message}");
+                Console.WriteLine($"Error processing file: {ex.Message}");
             }
         }
     }
