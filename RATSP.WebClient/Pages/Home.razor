@@ -2,24 +2,97 @@
 @using NPOI.SS.UserModel
 @using NPOI.XSSF.UserModel
 @using System.IO
+@using RATSP.Common.Interfaces
+@using RATSP.Common.Models
 @using RATSP.WebCommon.Models
+@inject ICompaniesService ICompaniesService
 
-<RadzenCard Style="width: 100%; max-width: 400px; margin: 20px auto;">
+<RadzenCard Style="width: 100%; margin: 20px auto;">
     <RadzenContent>
-        <InputFile OnChange="OnFileChange" Accept=".xls,.xlsx" />
-        <RadzenButton Text="Загрузить" Click="OnFileUpload" Disabled="@(!fileSelected)" />
+        <RadzenUpload Accept=".xls,.xlsx" Change="OnFileChange" />
+        
+        @if (fileSelected)
+        {
+            <div style="display: flex; flex-wrap: wrap;">
+                <div style="width: 100%; margin-bottom: 8px;">
+                    <RadzenDatePicker Placeholder="Выберите дату" @bind-Value="@selectedDate" style="width: 200px;" />
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 8px; margin-right: 24px;">
+                    <RadzenCheckBox @bind-Value="@GrossIn" Name="GrossIn" />
+                    <RadzenLabel Text="Бордеро исходящих рисков" Component="GrossIn" Style="margin-left: 8px; vertical-align: middle;" />
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 8px; margin-right: 24px;">
+                    <RadzenCheckBox @bind-Value="@GrossOut" Name="GrossOut" />
+                    <RadzenLabel Text="Бордеро входящих рисков" Component="GrossOut" Style="margin-left: 8px; vertical-align: middle;" />
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 8px; margin-right: 24px;">
+                    <RadzenCheckBox @bind-Value="@Debit" Name="Debit" />
+                    <RadzenLabel Text="Дебет-нота" Component="Debit" Style="margin-left: 8px; vertical-align: middle;" />
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                    <RadzenCheckBox @bind-Value="@Credit" Name="Credit" />
+                    <RadzenLabel Text="Кредит-нота" Component="Credit" Style="margin-left: 8px; vertical-align: middle;" />
+                </div>
+            </div>
+        }
+        
     </RadzenContent>
+
+    <RadzenDataGrid @ref="companyGrid" AllowRowSelectOnRowClick="@_allowRowSelectOnRowClick" AllowFiltering="false" AllowPaging="true" PageSize="11"
+                    AllowSorting="true" Data="@Companies" TItem="Company" ColumnWidth="120px"
+                    SelectionMode="DataGridSelectionMode.Multiple" @bind-Value="@_selectedCompanies" class="m-4">
+        <Columns>
+            <RadzenDataGridColumn TItem="Company" Width="30px" Sortable="false" Filterable="false">
+                <HeaderTemplate>
+                    <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select all items" } })"
+                                    Value="@(_selectedCompanies == null || _selectedCompanies?.Any() != true ? false : !Companies.All(i => _selectedCompanies.Contains(i)) ? null : Companies.Any(i => _selectedCompanies.Contains(i)))"
+                                    Change="@(args => _selectedCompanies = args == true ? Companies.ToList() : null)"/>
+                </HeaderTemplate>
+                <Template Context="data">
+                    <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(_selectedCompanies != null && _selectedCompanies.Contains(data))" InputAttributes="@(new Dictionary<string, object> { { "aria-label", "Select item" } })"
+                                    TValue="bool" Change="@(args => { if (!_allowRowSelectOnRowClick) { companyGrid.SelectRow(data); } })"/>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="Company" Property="Name" Title="Название"/>
+            <RadzenDataGridColumn TItem="Company" Property="@nameof(Company.Participation)" Title="Участие в РАТСП" Width="150px"/>
+            <RadzenDataGridColumn TItem="Company" Property="@nameof(Company.INN)" Title="ИНН" />
+        </Columns>
+    </RadzenDataGrid>
+
+    <RadzenButton Text="Сформировать" Click="OnFileUpload" Disabled="@(!fileSelected)" />
+    
 </RadzenCard>
 
 @code {
     private IBrowserFile selectedFile;
-    private bool fileSelected => selectedFile != null;
+    private bool fileSelected
+    {
+        get { return selectedFile != null; }
+        set {}
+    }
+    
+    private DateTime? selectedDate;
+    private bool GrossIn;
+    private bool GrossOut;
+    private bool Debit;
+    private bool Credit;
+
+    private readonly bool _allowRowSelectOnRowClick = true;
+    private IList<Company> _selectedCompanies;
+    private RadzenDataGrid<Company> companyGrid;
+    private IEnumerable<Company> Companies { get; set; } = new List<Company>();
     
     private List<ExcelValues> excelValuesList { get; set; } = new List<ExcelValues>();
-
-    private void OnFileChange(InputFileChangeEventArgs e)
+    
+    protected override async Task OnInitializedAsync()
     {
-        selectedFile = e.File;
+        Companies = await ICompaniesService.Read();
+    }   
+    
+    private void OnFileChange(UploadChangeEventArgs args)
+    {
+        selectedFile = args.Files.FirstOrDefault();
+        fileSelected = selectedFile != null;
         StateHasChanged();
     }
 
