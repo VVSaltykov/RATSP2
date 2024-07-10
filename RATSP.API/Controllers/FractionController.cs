@@ -33,4 +33,11 @@ public class FractionController : ControllerBase
         var fractions = (await FractionRepository.Read(include: f => f.Company)).ToList();
         return fractions;
     }
+    
+    [HttpPost("ReadByCompany")]
+    public async Task<List<Fraction>> ReadByCompany(Company company)
+    {
+        var fraction = (await FractionRepository.Read(f => f.CompanyId == company.Id)).ToList();
+        return fraction;
+    }
 }

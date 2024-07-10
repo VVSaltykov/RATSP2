@@ -47,4 +47,10 @@ public class CompaniesService : ICompaniesService
     {
         await _companiesService.Update(company);
     }
+
+    public async Task<Company> ReadByName(string companyName)
+    {
+        var companies = await _companiesService.ReadByName(companyName);
+        return companies;
+    }
 }

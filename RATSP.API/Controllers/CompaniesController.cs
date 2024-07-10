@@ -34,4 +34,11 @@ public class CompaniesController : ControllerBase
 
         return companies;
     }
+    
+    [HttpPost("ReadByName")]
+    public async Task<Company> ReadByName(string companyName)
+    {
+        var company = await CompaniesRepository.ReadFirst(c => c.Name == companyName);
+        return company;
+    }
 }

@@ -28,4 +28,10 @@ public class FractionsService : IFractionsService
         var fractions = await _fractionsService.Read();
         return fractions;
     }
+
+    public async Task<List<Fraction>> ReadByCompany(Company company)
+    {
+        var fractions = await _fractionsService.ReadByCompany(company);
+        return fractions;
+    }
 }

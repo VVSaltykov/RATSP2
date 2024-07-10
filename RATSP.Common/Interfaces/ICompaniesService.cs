@@ -13,4 +13,7 @@ public interface ICompaniesService
 
     [Post("/api/Companies/Update")]
     Task Update(Company company);
+
+    [Post("/api/Companies/ReadByName")]
+    Task<Company> ReadByName(string companyName);
 }

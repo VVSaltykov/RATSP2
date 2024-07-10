@@ -13,4 +13,7 @@ public interface IFractionsService
 
     [Post("/api/Fraction/ReadAll")]
     Task<List<Fraction>> Read();
+
+    [Post("/api/Fraction/ReadByCompany")]
+    Task<List<Fraction>> ReadByCompany(Company company);
 }
