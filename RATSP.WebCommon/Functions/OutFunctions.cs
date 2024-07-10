@@ -20,35 +20,35 @@ public static class OutFunctions
         string text = $"Бордеро исходящих рисков по страхованию рисков «терроризм» и/или «диверсия» \u2116 38-4-2023 от {formattedDate}";
     
         ExcelHelper.SetCellValue(sheet, 1, 1,
-            text, "Calibri", 14, (25.27, 14.3));
+            text, "Calibri", 14, (25.27, 18));
     
         ExcelHelper.SetCellValue(sheet, 2, 1,
             "к договору № Д-522111/11 от \"21\" ноября 2011 г.",
-            "Calibri", 14, (25.27, 14.3));
+            "Calibri", 14, (25.27, 18));
     
         ExcelHelper.SetCellValue(sheet, 4, 1,
             "Перестрахователь:",
-            "Calibri", 14, (25.27, 14.3));
+            "Calibri", 14, (25.27, 18));
     
         ExcelHelper.SetCellValue(sheet, 4, 2,
             $"{company.Name}",
-            "Calibri", 12, (20.4, 14.3));
+            "Calibri", 12, (20.4, 18));
     
         ExcelHelper.SetCellValue(sheet, 6, 1,
             "Доля ответственности Перестрахователя в отчетном периоде:",
-            "Calibri", 14, (25.27, 14.3));
+            "Calibri", 14, (25.27, 18));
         
         ExcelHelper.SetCellValue(sheet, 6, 6,
             $"{companyFraction.Value}",
-            "Calibri", 12, (15.87, 14.3));
+            "Calibri", 12, (15.87, 18));
         
         ExcelHelper.SetCellValue(sheet, 8, 1,
             "Отчетный период:",
-            "Calibri", 14, (25.27, 14.3));
+            "Calibri", 14, (25.27, 18));
         
         ExcelHelper.SetCellValue(sheet, 8, 2,
             $"{companyFraction.Start} - {companyFraction.End}",
-            "Calibri", 12, (20.4, 14.3));
+            "Calibri", 12, (20.4, 18));
         
         ExcelHelper.SetCellValue(sheet, 10, 3,
             "Период страхования / перестрахования",
@@ -65,7 +65,7 @@ public static class OutFunctions
             "Calibri", 9, (11.4, 25.4),
             mergeRegion: (10, 10, 15, 20), applyBorders: true);
         
-        ExcelHelper.SetCellValue(sheet, 10, 22,
+        ExcelHelper.SetCellValue(sheet, 10, 20,
             "Справочно",
             "Calibri", 9, (10, 25.4), applyBorders: true);
         
@@ -129,10 +129,6 @@ public static class OutFunctions
             "Нетто-премия в валюте договора\n",
             "Calibri", 9, (11, 93), applyBorders: true);
         
-        ExcelHelper.SetCellValue(sheet, 11, 14,
-            "Нетто-премия в валюте договора\n",
-            "Calibri", 9, (11, 93), applyBorders: true);
-        
         ExcelHelper.SetCellValue(sheet, 11, 15,
             "Процент поступившей премии\n",
             "Calibri", 9, (11.4, 93), applyBorders: true);
@@ -162,8 +158,8 @@ public static class OutFunctions
             "Calibri", 9, (16, 93), applyBorders: true);
     }
 
-    public static void DrawingTable(IWorkbook workbook, ISheet sheet, List<ExcelValues> excelValuesList, Company company, List<Fraction> fractions,
-        DateOnly selectedDate)
+    public static void DrawingTable(IWorkbook workbook, ISheet sheet, List<ExcelValues> excelValuesList,
+        Company company, List<Fraction> fractions, DateOnly selectedDate)
     {
         int rowCount = 12;
         int number = 1;

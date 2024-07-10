@@ -36,6 +36,10 @@ public static class ExcelService
             if (GrossOut)
             {
                 ISheet sheet = workbook.CreateSheet("Входящее");
+                
+                InFunctions.DrawingTableHeader(sheet, company, fractions, selectedDate);
+                
+                InFunctions.DrawingTable(workbook, sheet, excelValuesList, company, fractions, selectedDate);
             }
 
             if (Credit)
