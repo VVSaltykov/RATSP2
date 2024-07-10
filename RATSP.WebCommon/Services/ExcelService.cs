@@ -13,33 +13,35 @@ public static class ExcelService
         DateOnly selectedDate, bool GrossIn,
         bool GrossOut, bool Debit, bool Credit)
     {
-        IWorkbook workbook = new XSSFWorkbook();
-
-        if (GrossIn)
+        foreach (var company in companies)
         {
-            foreach (var company in companies)
+            IWorkbook workbook = new XSSFWorkbook();
+            if (GrossIn)
             {
                 ISheet sheet = workbook.CreateSheet("Исходящее");
-                
+
                 OutFunctions.DrawingTableHeader(sheet, company, fractions, selectedDate);
 
                 List<ExcelValues> companyExcelValuesList =
                     excelValuesList.Where(e => e.Insurer == company.Name).ToList();
-                
-                OutFunctions.DrawingTable(sheet, companyExcelValuesList, company, fractions, selectedDate);
+
+                OutFunctions.DrawingTable(workbook, sheet, companyExcelValuesList, company, fractions, selectedDate);
             }
-        }
-        if (Debit)
-        {
-            ISheet sheet = workbook.CreateSheet("Дебет-нота");
-        }
-        if (GrossOut)
-        {
-            ISheet sheet = workbook.CreateSheet("Входящее");
-        }
-        if (Credit)
-        {
-            ISheet sheet = workbook.CreateSheet("Кредит-нота");
+
+            if (Debit)
+            {
+                ISheet sheet = workbook.CreateSheet("Дебет-нота");
+            }
+
+            if (GrossOut)
+            {
+                ISheet sheet = workbook.CreateSheet("Входящее");
+            }
+
+            if (Credit)
+            {
+                ISheet sheet = workbook.CreateSheet("Кредит-нота");
+            }
         }
     }
 }

@@ -162,7 +162,7 @@ public static class OutFunctions
             "Calibri", 9, (16, 93), applyBorders: true);
     }
 
-    public static void DrawingTable(ISheet sheet, List<ExcelValues> excelValuesList, Company company, List<Fraction> fractions,
+    public static void DrawingTable(IWorkbook workbook, ISheet sheet, List<ExcelValues> excelValuesList, Company company, List<Fraction> fractions,
         DateOnly selectedDate)
     {
         int rowCount = 12;
@@ -429,5 +429,41 @@ public static class OutFunctions
         ExcelHelper.SetCellValue(sheet, rowCount + 2, 19,
             $"{reportingPeriodAward + previousPeriodAward}",
             "Calibri", 10, (10, 14.3), applyBorders: true);
+        
+        ExcelHelper.SetCellValue(sheet, rowCount + 5, 1,
+            "Перестрахователь:",
+            "Calibri", 14, (25.27, 18), applyBorders: true);
+        
+        ExcelHelper.SetCellValue(sheet, rowCount + 5, 8,
+            "Администратор:",
+            "Calibri", 14, (15.73, 18), applyBorders: true);
+        
+        ExcelHelper.SetCellValue(sheet, rowCount + 7, 8,
+            "Директор по перестрахованию ООО \"Индустриальный страховой брокер\"",
+            "Calibri", 14, (15.73, 18), applyBorders: true);
+        
+        ExcelHelper.SetCellValue(sheet, rowCount + 10, 8,
+            "_____________________ А.С. Кониль",
+            "Calibri", 14, (15.73, 18), applyBorders: true);
+        
+        ExcelHelper.SetCellValue(sheet, rowCount + 10, 1,
+            "_____________________",
+            "Calibri", 14, (25.27, 18), applyBorders: true);
+        
+        ExcelHelper.SetCellValue(sheet, rowCount + 11, 8,
+            "Доверенность б/н от 03.05.2023г.",
+            "Calibri", 14, (15.73, 18), applyBorders: true);
+        
+        string imagePath = "~/wwwroot/Печать.png";
+        
+        byte[] bytes = File.ReadAllBytes(imagePath);
+
+        int pictureIndex = workbook.AddPicture(bytes, PictureType.JPEG);
+
+        IDrawing drawing = sheet.CreateDrawingPatriarch();
+        IClientAnchor anchor = drawing.CreateAnchor(0, 0, 0, 0, 8, rowCount + 5, 9, rowCount + 13);
+
+        IPicture picture = drawing.CreatePicture(anchor, pictureIndex);
+        picture.Resize(); 
     }
 }
