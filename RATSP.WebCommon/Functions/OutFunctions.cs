@@ -174,7 +174,7 @@ public static class OutFunctions
         ExcelHelper.SetCellValue(sheet, rowCount, 0,
             "договоры отчетного периода\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n",
             "Calibri", 9, (5.27, 14.3),
-            mergeRegion: (12, 12, 0, 21), applyBorders: true);
+            mergeRegion: (rowCount, rowCount, 0, 21), applyBorders: true);
 
         rowCount++;
         
