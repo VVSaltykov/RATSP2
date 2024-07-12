@@ -31,6 +31,8 @@ public static class ExcelService
             if (Debit)
             {
                 ISheet sheet = workbook.CreateSheet("Дебет-нота");
+                
+                DebitFunctions.DrawingTable(workbook, sheet, excelValuesList, company, fractions, selectedDate);
             }
 
             if (GrossOut)
