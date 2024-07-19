@@ -2,12 +2,14 @@
 @using NPOI.SS.UserModel
 @using NPOI.XSSF.UserModel
 @using System.IO
+@using System.IO.Compression
 @using RATSP.Common.Interfaces
 @using RATSP.Common.Models
 @using RATSP.WebCommon.Models
 @using RATSP.WebCommon.Services
 @inject ICompaniesService ICompaniesService
 @inject IFractionsService IFractionService
+@inject IJSRuntime jsRuntime
 
 <RadzenCard Style="width: 100%; margin: 20px auto;">
     <RadzenContent>
@@ -64,6 +66,15 @@
     <RadzenButton Text="Сформировать" Click="OnFileUpload" Disabled="@(!fileSelected)" />
     
 </RadzenCard>
+
+<script>
+    function downloadZip(base64String) {
+        const link = document.createElement('a');
+        link.href = 'data:application/zip;base64,' + base64String;
+        link.download = 'files.zip';
+        link.click();
+    }
+</script>
 
 @code {
     private IBrowserFile selectedFile;
@@ -122,9 +133,23 @@
                     IWorkbook workbook = new XSSFWorkbook(stream);
 
                     excelValuesList = ExcelValuesService.AddExcelValues(workbook);
-                    
-                    ExcelService.CreateExcelDocument(excelValuesList, _selectedCompanies, Fractions,
-                        selectedDate, GrossIn, GrossOut, Debit, Credit);
+
+                    var excelByteArrays = ExcelService.CreateExcelDocuments(
+                        excelValuesList, _selectedCompanies, Companies, Fractions,
+                        selectedDate, GrossIn, GrossOut, Debit, Credit
+                    );
+
+                    var files = new Dictionary<string, byte[]>
+                    {
+                        { "file1.xlsx", excelByteArrays[0] }  // Вставьте реальные имена файлов
+                        // Добавьте другие файлы по мере необходимости
+                    };
+
+                    var zipFileBytes = CreateZipFile(files);
+
+                    var base64Zip = Convert.ToBase64String(zipFileBytes);
+
+                    await jsRuntime.InvokeVoidAsync("downloadZip", base64Zip);
                 }
                 else
                 {
@@ -137,4 +162,20 @@
             }
         }
     }
+    
+    private static byte[] CreateZipFile(Dictionary<string, byte[]> files)
+    {
+        using var zipStream = new MemoryStream();
+        using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
+        {
+            foreach (var file in files)
+            {
+                var zipEntry = archive.CreateEntry(file.Key);
+                using var entryStream = zipEntry.Open();
+                entryStream.Write(file.Value, 0, file.Value.Length);
+            }
+        }
+        return zipStream.ToArray();
+    }
 }
+

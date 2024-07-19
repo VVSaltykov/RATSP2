@@ -131,8 +131,9 @@ public static class DebitFunctions
         
         foreach (var excelValues in excelValuesList)
         {
-            decimal _grossPremium = Convert.ToDecimal(excelValues.NetPremium) /
-                                   (100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100;
+            decimal _grossPremium = (Convert.ToDecimal(excelValues.NetPremium) /
+                                   (100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100)  *
+                                    Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
             if (_grossPremium > 0)
             {
                 sumGrossPremiumPaid += _grossPremium;
@@ -155,7 +156,8 @@ public static class DebitFunctions
         
         foreach (var excelValues in excelValuesList)
         {
-            decimal _netPremium = Convert.ToDecimal(excelValues.NetPremium);
+            decimal _netPremium = Convert.ToDecimal(excelValues.NetPremium) *
+                                  Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
             
             if (_netPremium > 0)
             {
@@ -367,16 +369,16 @@ public static class DebitFunctions
             "___________________",
             "Calibri", 11, (19.6, 14.3));
         
-        string imagePath = "~/wwwroot/Печать.png";
-        
-        byte[] bytes = File.ReadAllBytes(imagePath);
-
-        int pictureIndex = workbook.AddPicture(bytes, PictureType.JPEG);
-
-        IDrawing drawing = sheet.CreateDrawingPatriarch();
-        IClientAnchor anchor = drawing.CreateAnchor(0, 0, 0, 0, 3, 41, 3, 50);
-
-        IPicture picture = drawing.CreatePicture(anchor, pictureIndex);
-        picture.Resize();
+        // string imagePath = "~/wwwroot/Печать.png";
+        //
+        // byte[] bytes = File.ReadAllBytes(imagePath);
+        //
+        // int pictureIndex = workbook.AddPicture(bytes, PictureType.JPEG);
+        //
+        // IDrawing drawing = sheet.CreateDrawingPatriarch();
+        // IClientAnchor anchor = drawing.CreateAnchor(0, 0, 0, 0, 3, 41, 3, 50);
+        //
+        // IPicture picture = drawing.CreatePicture(anchor, pictureIndex);
+        // picture.Resize();
     }
 }

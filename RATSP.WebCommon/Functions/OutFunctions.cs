@@ -450,16 +450,16 @@ public static class OutFunctions
             "Доверенность б/н от 03.05.2023г.",
             "Calibri", 14, (15.73, 18), applyBorders: true);
         
-        string imagePath = "~/wwwroot/Печать.png";
-        
-        byte[] bytes = File.ReadAllBytes(imagePath);
-
-        int pictureIndex = workbook.AddPicture(bytes, PictureType.JPEG);
-
-        IDrawing drawing = sheet.CreateDrawingPatriarch();
-        IClientAnchor anchor = drawing.CreateAnchor(0, 0, 0, 0, 8, rowCount + 5, 9, rowCount + 13);
-
-        IPicture picture = drawing.CreatePicture(anchor, pictureIndex);
-        picture.Resize(); 
+        // string imagePath = "~/wwwroot/Печать.png";
+        //
+        // byte[] bytes = File.ReadAllBytes(imagePath);
+        //
+        // int pictureIndex = workbook.AddPicture(bytes, PictureType.JPEG);
+        //
+        // IDrawing drawing = sheet.CreateDrawingPatriarch();
+        // IClientAnchor anchor = drawing.CreateAnchor(0, 0, 0, 0, 8, rowCount + 5, 9, rowCount + 13);
+        //
+        // IPicture picture = drawing.CreatePicture(anchor, pictureIndex);
+        // picture.Resize(); 
     }
 }

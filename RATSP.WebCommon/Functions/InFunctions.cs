@@ -211,7 +211,7 @@ public static class InFunctions
                     "Calibri", 11, (12.73, 57), applyBorders: true);
                 
                 ExcelHelper.SetCellValue(sheet, rowCount, 9,
-                    $"{Convert.ToDecimal(excelValues.InsuranceAmount_LiabilityLimit) * (Convert.ToDecimal(companyFraction)/100)}",
+                    $"{Convert.ToDecimal(excelValues.InsuranceAmount_LiabilityLimit) * (companyFraction.Value/100)}",
                     "Calibri", 11, (15.73, 57), applyBorders: true);
                 
                 ExcelHelper.SetCellValue(sheet, rowCount, 10,
@@ -245,7 +245,7 @@ public static class InFunctions
                 reportingPeriodSum = reportingPeriodSum + (Convert.ToDecimal(excelValues.RefundPremium));
                 
                 ExcelHelper.SetCellValue(sheet, rowCount, 17,
-                    $"{excelValues.PaymentNumber} / {excelValues.PaymentDate} / {companyFraction} / {excelValues.SanctionsRisk} / {excelValues.Comment}",
+                    $"{excelValues.PaymentNumber} / {excelValues.PaymentDate} / {companyFraction.Value} / {excelValues.SanctionsRisk} / {excelValues.Comment}",
                     "Calibri", 11, (16.27, 57), applyBorders: true);
                 
                 ExcelHelper.SetCellValue(sheet, rowCount, 18,
@@ -318,7 +318,7 @@ public static class InFunctions
                     "Calibri", 11, (12.73, 57), applyBorders: true);
                 
                 ExcelHelper.SetCellValue(sheet, rowCount, 9,
-                    $"{Convert.ToDecimal(excelValues.InsuranceAmount_LiabilityLimit) * (Convert.ToDecimal(companyFraction)/100)}",
+                    $"{Convert.ToDecimal(excelValues.InsuranceAmount_LiabilityLimit) * (companyFraction.Value/100)}",
                     "Calibri", 11, (15.73, 57), applyBorders: true);
                 
                 ExcelHelper.SetCellValue(sheet, rowCount, 10,
@@ -352,7 +352,7 @@ public static class InFunctions
                 previousPeriodSum = previousPeriodSum + (Convert.ToDecimal(excelValues.RefundPremium));
                 
                 ExcelHelper.SetCellValue(sheet, rowCount, 17,
-                    $"{excelValues.PaymentNumber} / {excelValues.PaymentDate} / {companyFraction} / {excelValues.SanctionsRisk} / {excelValues.Comment}",
+                    $"{excelValues.PaymentNumber} / {excelValues.PaymentDate} / {companyFraction.Value} / {excelValues.SanctionsRisk} / {excelValues.Comment}",
                     "Calibri", 11, (16.27, 57), applyBorders: true);
                 
                 ExcelHelper.SetCellValue(sheet, rowCount, 18,
@@ -408,16 +408,16 @@ public static class InFunctions
             "Доверенность б/н от 03.05.2023г.",
             "Calibri", 14, (15.73, 18), applyBorders: true);
         
-        string imagePath = "~/wwwroot/Печать.png";
-        
-        byte[] bytes = File.ReadAllBytes(imagePath);
-
-        int pictureIndex = workbook.AddPicture(bytes, PictureType.JPEG);
-
-        IDrawing drawing = sheet.CreateDrawingPatriarch();
-        IClientAnchor anchor = drawing.CreateAnchor(0, 0, 0, 0, 8, rowCount + 5, 9, rowCount + 13);
-
-        IPicture picture = drawing.CreatePicture(anchor, pictureIndex);
-        picture.Resize(); 
+        // string imagePath = "~/wwwroot/Печать.png";
+        //
+        // byte[] bytes = File.ReadAllBytes(imagePath);
+        //
+        // int pictureIndex = workbook.AddPicture(bytes, PictureType.JPEG);
+        //
+        // IDrawing drawing = sheet.CreateDrawingPatriarch();
+        // IClientAnchor anchor = drawing.CreateAnchor(0, 0, 0, 0, 8, rowCount + 5, 9, rowCount + 13);
+        //
+        // IPicture picture = drawing.CreatePicture(anchor, pictureIndex);
+        // picture.Resize(); 
     }
 }
