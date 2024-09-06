@@ -59,5 +59,4 @@ public static class ExcelHelper
             sheet.AddMergedRegion(region);
         }
     }
-
 }

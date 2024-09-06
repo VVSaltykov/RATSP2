@@ -178,9 +178,9 @@ public static class OutFunctions
 
         rowCount++;
         
-        foreach (var excelValues in excelValuesList)
+        excelValuesList.RemoveAll(excelValues =>
         {
-            if (DateOnly.Parse(excelValues.StartDate) < selectedDate && DateOnly.Parse(excelValues.EndDate) > selectedDate)
+            if (DateOnly.Parse(excelValues.StartDate) >= companyFraction.Start && DateOnly.Parse(excelValues.StartDate) <= companyFraction.End) 
             {
                 ExcelHelper.SetCellValue(sheet, rowCount, 0,
                     $"{number}",
@@ -274,11 +274,15 @@ public static class OutFunctions
                 ExcelHelper.SetCellValue(sheet, rowCount, 21,
                     $"{excelValues.InsuranceType}",
                     "Calibri", 11, (16, 28.5), applyBorders: true);
-            }
+            
 
-            rowCount++;
-            number++;
-        }
+                rowCount++;
+                number++;
+                
+                return true; 
+            }
+            return false; 
+        });
         
         ExcelHelper.SetCellValue(sheet, rowCount, 14,
             "Итого по договорам отчетного периода:",
@@ -299,10 +303,12 @@ public static class OutFunctions
             "договоры предыдущих отчетных периодов\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n",
             "Calibri", 9, (5.27, 14.3),
             mergeRegion: (rowCount, rowCount, 0, 21), applyBorders: true);
+
+        rowCount++;
         
         foreach (var excelValues in excelValuesList)
         {
-            if (DateOnly.Parse(excelValues.EndDate) < selectedDate)
+            if (DateOnly.Parse(excelValues.StartDate) < companyFraction.Start || DateOnly.Parse(excelValues.StartDate) > companyFraction.End)
             {
                 ExcelHelper.SetCellValue(sheet, rowCount, 0,
                     $"{number}",
@@ -373,10 +379,10 @@ public static class OutFunctions
                     "Calibri", 11, (11.73, 28.5), applyBorders: true);
                 
                 ExcelHelper.SetCellValue(sheet, rowCount, 17,
-                    $"{Convert.ToDecimal(excelValues.NetPremium) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate)}",
+                    $"{Convert.ToDecimal(excelValues.RefundPremium) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate)}",
                     "Calibri", 11, (12.73, 28.5), applyBorders: true);
                 
-                previousPeriodSum = previousPeriodSum + (Convert.ToDecimal(excelValues.NetPremium) *
+                previousPeriodSum += (Convert.ToDecimal(excelValues.RefundPremium) *
                                                          Convert.ToDecimal(excelValues.PaymentRate_ReturnRate));
                 
                 ExcelHelper.SetCellValue(sheet, rowCount, 18,
@@ -387,7 +393,7 @@ public static class OutFunctions
                     $"{excelValues.AdministratorCommissionRub}",
                     "Calibri", 11, (10, 28.5), applyBorders: true);
                 
-                previousPeriodAward = previousPeriodAward + Convert.ToDecimal(excelValues.AdministratorCommissionRub);
+                previousPeriodAward += Convert.ToDecimal(excelValues.AdministratorCommissionRub);
                 
                 ExcelHelper.SetCellValue(sheet, rowCount, 20,
                     $"{excelValues.PaymentContract}",

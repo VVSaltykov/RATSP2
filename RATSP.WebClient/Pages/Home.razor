@@ -22,12 +22,12 @@
                     <RadzenDatePicker Placeholder="Выберите дату" @bind-Value="@selectedDate" style="width: 200px;" />
                 </div>
                 <div style="display: flex; align-items: center; margin-bottom: 8px; margin-right: 24px;">
-                    <RadzenCheckBox @bind-Value="@GrossIn" Name="GrossIn" />
-                    <RadzenLabel Text="Бордеро исходящих рисков" Component="GrossIn" Style="margin-left: 8px; vertical-align: middle;" />
+                    <RadzenCheckBox @bind-Value="@GrossOut" Name="GrossOut" />
+                    <RadzenLabel Text="Бордеро исходящих рисков" Component="GrossOut" Style="margin-left: 8px; vertical-align: middle;" />
                 </div>
                 <div style="display: flex; align-items: center; margin-bottom: 8px; margin-right: 24px;">
-                    <RadzenCheckBox @bind-Value="@GrossOut" Name="GrossOut" />
-                    <RadzenLabel Text="Бордеро входящих рисков" Component="GrossOut" Style="margin-left: 8px; vertical-align: middle;" />
+                    <RadzenCheckBox @bind-Value="@GrossIn" Name="GrossIn" />
+                    <RadzenLabel Text="Бордеро входящих рисков" Component="GrossIn" Style="margin-left: 8px; vertical-align: middle;" />
                 </div>
                 <div style="display: flex; align-items: center; margin-bottom: 8px; margin-right: 24px;">
                     <RadzenCheckBox @bind-Value="@Debit" Name="Debit" />
