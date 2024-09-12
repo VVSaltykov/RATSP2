@@ -1,11 +1,11 @@
 ﻿using NPOI.SS.UserModel;
 using RATSP.WebCommon.Models;
 
-namespace RATSP.WebCommon.Services;
+namespace RATSP.GrossService.Services;
 
-public static class ExcelValuesService
+public partial class ExcelValuesService
 {
-    public static List<ExcelValues> AddExcelValues(IWorkbook workBook)
+    public List<ExcelValues> AddExcelValues(IWorkbook workBook)
     {
         List<ExcelValues> excelValuesList = new List<ExcelValues>();
         ISheet sheet = workBook.GetSheetAt(0);

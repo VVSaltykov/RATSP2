@@ -1,10 +1,10 @@
 ﻿using System.Globalization;
 using NPOI.SS.UserModel;
 using RATSP.Common.Models;
+using RATSP.GrossService.Utils;
 using RATSP.WebCommon.Models;
-using RATSP.WebCommon.Utils;
 
-namespace RATSP.WebCommon.Functions;
+namespace RATSP.GrossService.Functions;
 
 public static class DebitFunctions
 {
@@ -27,6 +27,8 @@ public static class DebitFunctions
         
         var companyFraction = fractions.FirstOrDefault(f => f.CompanyId == company.Id &&
                                                             f.Start < selectedDate && f.End > selectedDate);
+
+        excelValuesList = excelValuesList.Where(c => c.Insurer == company.Name).ToList();
         
         string text = $"Дебет - Нота \u2116 38-4-2023 от {formattedDate}";
     
@@ -61,12 +63,10 @@ public static class DebitFunctions
 
         foreach (var excelValues in excelValuesList)
         {
-            if (DateOnly.Parse(excelValues.StartDate) < selectedDate &&
-                DateOnly.Parse(excelValues.EndDate) > selectedDate)
+            if (DateOnly.Parse(excelValues.StartDate) >= companyFraction.Start && DateOnly.Parse(excelValues.StartDate) <= companyFraction.End)
             {
-                reportingPerioudGross += Convert.ToDecimal(excelValues.NetPremium) *
-                                         Convert.ToDecimal(excelValues.PaymentRate_ReturnRate) +
-                                         Convert.ToDecimal(excelValues.ReinsurerCommission);
+                reportingPerioudGross += (Convert.ToDecimal(excelValues.NetPremium) + Convert.ToDecimal(excelValues.ReinsurerCommission)) 
+                                                * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
             }
         }
 
@@ -82,8 +82,7 @@ public static class DebitFunctions
         
         foreach (var excelValues in excelValuesList)
         {
-            if (DateOnly.Parse(excelValues.StartDate) < selectedDate &&
-                DateOnly.Parse(excelValues.EndDate) > selectedDate)
+            if (DateOnly.Parse(excelValues.StartDate) >= companyFraction.Start && DateOnly.Parse(excelValues.StartDate) <= companyFraction.End)
             {
                 reportingPerioudInsurerCommision += Convert.ToDecimal(excelValues.ReinsurerCommission);
             }
@@ -101,8 +100,7 @@ public static class DebitFunctions
         
         foreach (var excelValues in excelValuesList)
         {
-            if (DateOnly.Parse(excelValues.StartDate) < selectedDate &&
-                DateOnly.Parse(excelValues.EndDate) > selectedDate)
+            if (DateOnly.Parse(excelValues.StartDate) >= companyFraction.Start && DateOnly.Parse(excelValues.StartDate) <= companyFraction.End)
             {
                 reportingPerioudNetPremium += Convert.ToDecimal(excelValues.NetPremium) *
                                          Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
@@ -129,11 +127,44 @@ public static class DebitFunctions
             "Сумма оплаченной брутто-премии",
             "Calibri", 10, (43, 29), applyBorders: true);
         
+        ExcelHelper.SetCellValue(sheet, 14, 1,
+            "2,3", "Calibri", 10, (6.87, 29), applyBorders: true);
+        
+        ExcelHelper.SetCellValue(sheet, 14, 2,
+            "Сумма оплаченной нетто-премии",
+            "Calibri", 10, (43, 29), applyBorders: true);
+        
         foreach (var excelValues in excelValuesList)
         {
-            decimal _grossPremium = (Convert.ToDecimal(excelValues.NetPremium) /
-                                   (100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100)  *
-                                    Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+            decimal _netPremium;
+            decimal _grossPremium;
+
+            if (excelValues.NetPremium == "0")
+            {
+                _netPremium = Convert.ToDecimal(excelValues.RefundPremium) *
+                                      Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                
+                decimal commissionPortion = (100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100;
+                _grossPremium = _netPremium / commissionPortion;
+            }
+            else
+            {
+                _netPremium = Convert.ToDecimal(excelValues.NetPremium) *
+                                      Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                
+                decimal commissionPortion = (100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100;
+                _grossPremium = _netPremium / commissionPortion;
+            }
+            
+            if (_netPremium > 0)
+            {
+                sumNetPremiumPaid += _netPremium;
+            }
+            else
+            {
+                netPremium = _netPremium;
+            }
+            
             if (_grossPremium > 0)
             {
                 sumGrossPremiumPaid += _grossPremium;
@@ -146,28 +177,6 @@ public static class DebitFunctions
         
         ExcelHelper.SetCellValue(sheet, 12, 3,
             $"{sumGrossPremiumPaid}", "Calibri", 10, (19.6, 29), applyBorders: true);
-        
-        ExcelHelper.SetCellValue(sheet, 14, 1,
-            "2,3", "Calibri", 10, (6.87, 29), applyBorders: true);
-        
-        ExcelHelper.SetCellValue(sheet, 14, 2,
-            "Сумма оплаченной нетто-премии",
-            "Calibri", 10, (43, 29), applyBorders: true);
-        
-        foreach (var excelValues in excelValuesList)
-        {
-            decimal _netPremium = Convert.ToDecimal(excelValues.NetPremium) *
-                                  Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
-            
-            if (_netPremium > 0)
-            {
-                sumNetPremiumPaid += _netPremium;
-            }
-            else
-            {
-                netPremium = _netPremium;
-            }
-        }
         
         ExcelHelper.SetCellValue(sheet, 14, 3,
             $"{sumNetPremiumPaid}", "Calibri", 10, (19.6, 29), applyBorders: true);
@@ -303,7 +312,7 @@ public static class DebitFunctions
             "Calibri", 11, (6.87, 31.1));
         
         ExcelHelper.SetCellValue(sheet, 29, 3,
-            $"{commission}", "Calibri", 11, (19.6, 31.1));
+            $"{sumAdminCommissionPaid}", "Calibri", 11, (19.6, 31.1));
         
         ExcelHelper.SetCellValue(sheet, 31, 1,
             "Просим Вас осуществить платеж вышеуказанной суммы на счет Администратора РАТСП",

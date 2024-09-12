@@ -20,7 +20,7 @@ public class Program
             options.AddPolicy("AllowSpecificOrigin",
                 builder =>
                 {
-                    builder.WithOrigins("https://localhost:7197")
+                    builder.WithOrigins("https://localhost:7197", "https://localhost:7123")
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });

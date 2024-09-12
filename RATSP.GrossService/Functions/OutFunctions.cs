@@ -1,10 +1,10 @@
 ﻿using System.Globalization;
 using NPOI.SS.UserModel;
 using RATSP.Common.Models;
+using RATSP.GrossService.Utils;
 using RATSP.WebCommon.Models;
-using RATSP.WebCommon.Utils;
 
-namespace RATSP.WebCommon.Functions;
+namespace RATSP.GrossService.Functions;
 
 public static class OutFunctions
 {
@@ -254,7 +254,7 @@ public static class OutFunctions
                     $"{Convert.ToDecimal(excelValues.NetPremium) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate)}",
                     "Calibri", 11, (12.73, 28.5), applyBorders: true);
 
-                reportingPeriodSum = reportingPeriodSum + (Convert.ToDecimal(excelValues.NetPremium) *
+                reportingPeriodSum += (Convert.ToDecimal(excelValues.NetPremium) *
                                                            Convert.ToDecimal(excelValues.PaymentRate_ReturnRate));
                 
                 ExcelHelper.SetCellValue(sheet, rowCount, 18,
@@ -265,7 +265,7 @@ public static class OutFunctions
                     $"{excelValues.AdministratorCommissionRub}",
                     "Calibri", 11, (10, 28.5), applyBorders: true);
 
-                reportingPeriodAward = reportingPeriodAward + Convert.ToDecimal(excelValues.AdministratorCommissionRub);
+                reportingPeriodAward += Convert.ToDecimal(excelValues.AdministratorCommissionRub);
                 
                 ExcelHelper.SetCellValue(sheet, rowCount, 20,
                     $"{excelValues.PaymentContract}",

@@ -12,7 +12,7 @@
         <RadzenButton Text="Создать компанию" Click="@OpenCreateDialog"  />
     </HeaderTemplate>
     <Columns>
-        <RadzenDataGridColumn Visible="@EmployeeIDVisible" Property="@nameof(Company.Id)" Title="ID" Width="80px" TextAlign="TextAlign.Center" Frozen="true" />
+        <RadzenDataGridColumn Property="@nameof(Company.Id)" Title="ID" Width="80px" TextAlign="TextAlign.Center" Frozen="true" />
         <RadzenDataGridColumn Property="@nameof(Company.Name)" Title="Название" />
         <RadzenDataGridColumn Property="@nameof(Company.Participation)" Title="Участие в РАТСП" Width="150px"/>
         <RadzenDataGridColumn Property="@nameof(Company.INN)" Title="ИНН" />
@@ -20,7 +20,6 @@
 </RadzenDataGrid>
 
 @code {
-    bool EmployeeIDVisible = false;
     IEnumerable<Company> companies;
 
     [Parameter]

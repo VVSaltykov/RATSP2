@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RATSP.API", "RATSP.API\RATS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RATSP.WebCommon", "RATSP.WebCommon\RATSP.WebCommon.csproj", "{4A91FE15-02DD-4926-9891-51729390C81F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RATSP.GrossService", "RATSP.GrossService\RATSP.GrossService.csproj", "{BAD1ACC8-5415-4739-A348-FBE61FF54E94}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{4A91FE15-02DD-4926-9891-51729390C81F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A91FE15-02DD-4926-9891-51729390C81F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A91FE15-02DD-4926-9891-51729390C81F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAD1ACC8-5415-4739-A348-FBE61FF54E94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAD1ACC8-5415-4739-A348-FBE61FF54E94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAD1ACC8-5415-4739-A348-FBE61FF54E94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAD1ACC8-5415-4739-A348-FBE61FF54E94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

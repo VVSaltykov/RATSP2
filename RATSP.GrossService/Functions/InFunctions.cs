@@ -1,10 +1,10 @@
 ﻿using System.Globalization;
 using NPOI.SS.UserModel;
 using RATSP.Common.Models;
+using RATSP.GrossService.Utils;
 using RATSP.WebCommon.Models;
-using RATSP.WebCommon.Utils;
 
-namespace RATSP.WebCommon.Functions;
+namespace RATSP.GrossService.Functions;
 
 public static class InFunctions
 {

@@ -1,15 +1,15 @@
 ﻿using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using RATSP.Common.Models;
-using RATSP.WebCommon.Functions;
+using RATSP.GrossService.Functions;
 using RATSP.WebCommon.Models;
 
-namespace RATSP.WebCommon.Services;
+namespace RATSP.GrossService.Services;
 
-public static class ExcelService
+public partial class ExcelService
 {
-    public static List<byte[]> CreateExcelDocuments(List<ExcelValues> excelValuesList,
-        IList<Company> selectedCompanies, IEnumerable<Company> allCompanies, List<Fraction> fractions,
+    public async Task<List<byte[]>> CreateExcelDocuments(List<ExcelValues> excelValuesList,
+        List<Company> selectedCompanies, List<Fraction> fractions,
         DateOnly selectedDate, bool GrossIn, bool GrossOut, bool Debit, bool Credit)
     {
         var excelByteArrays = new List<byte[]>();
