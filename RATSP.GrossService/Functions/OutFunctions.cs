@@ -178,7 +178,7 @@ public static class OutFunctions
 
         rowCount++;
         
-        excelValuesList.RemoveAll(excelValues =>
+        foreach (var excelValues in excelValuesList)
         {
             if (DateOnly.Parse(excelValues.StartDate) >= companyFraction.Start && DateOnly.Parse(excelValues.StartDate) <= companyFraction.End) 
             {
@@ -278,11 +278,8 @@ public static class OutFunctions
 
                 rowCount++;
                 number++;
-                
-                return true; 
-            }
-            return false; 
-        });
+            } 
+        }
         
         ExcelHelper.SetCellValue(sheet, rowCount, 14,
             "Итого по договорам отчетного периода:",

@@ -159,53 +159,54 @@ public static class InFunctions
         decimal reportingPeriodAward = 0;
         decimal previousPeriodSum = 0;
         decimal previousPeriodAward = 0;
-        
+
         var companyFraction = fractions.FirstOrDefault(f => f.CompanyId == company.Id &&
                                                             f.Start < selectedDate && f.End > selectedDate);
-        
+
         ExcelHelper.SetCellValue(sheet, rowCount, 0,
             "договоры отчетного периода\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n",
             "Calibri", 9, (5.27, 14.3),
             mergeRegion: (rowCount, rowCount, 0, 19), applyBorders: true);
 
         rowCount++;
-        
-        excelValuesList.RemoveAll(excelValues =>
+
+        foreach (var excelValues in excelValuesList)
         {
-            if (DateOnly.Parse(excelValues.StartDate) >= companyFraction.Start && DateOnly.Parse(excelValues.StartDate) <= companyFraction.End) 
+            if (DateOnly.Parse(excelValues.StartDate) >= companyFraction.Start &&
+                DateOnly.Parse(excelValues.StartDate) <= companyFraction.End && excelValues.Insurer != "АО \"МАКС\"")
             {
                 ExcelHelper.SetCellValue(sheet, rowCount, 0,
                     $"{number}",
                     "Calibri", 11, (5.27, 57), applyBorders: true);
-                
+
                 ExcelHelper.SetCellValue(sheet, rowCount, 1,
                     $"{excelValues.Insurer}",
                     "Calibri", 11, (25.27, 57), applyBorders: true);
-                
+
                 ExcelHelper.SetCellValue(sheet, rowCount, 2,
                     $"{excelValues.Policyholder}",
                     "Calibri", 11, (25.27, 57), applyBorders: true);
-                
+
                 ExcelHelper.SetCellValue(sheet, rowCount, 3,
                     $"{excelValues.ContractNumber}",
                     "Calibri", 11, (20.4, 57), applyBorders: true);
-                
+
                 ExcelHelper.SetCellValue(sheet, rowCount, 4,
                     $"{excelValues.StartDate}",
                     "Calibri", 11, (12, 57), applyBorders: true);
-                
+
                 ExcelHelper.SetCellValue(sheet, rowCount, 5,
                     $"{excelValues.EndDate}",
                     "Calibri", 11, (13.73, 57), applyBorders: true);
-                
+
                 ExcelHelper.SetCellValue(sheet, rowCount, 6,
                     $"{excelValues.Currency}",
                     "Calibri", 11, (8.6, 57), applyBorders: true);
-                
+
                 ExcelHelper.SetCellValue(sheet, rowCount, 7,
                     $"{excelValues.InsuranceAmount_LiabilityLimit}",
                     "Calibri", 11, (15.87, 57), applyBorders: true);
-                
+
                 ExcelHelper.SetCellValue(sheet, rowCount, 8,
                     $"{excelValues.AccruedBonus100}",
                     "Calibri", 11, (12.73, 57), applyBorders: true);
@@ -213,149 +214,150 @@ public static class InFunctions
                 if (excelValues.PaymentNumber == "1")
                 {
                     ExcelHelper.SetCellValue(sheet, rowCount, 9,
-                    $"{Convert.ToDecimal(excelValues.InsuranceAmount_LiabilityLimit) * (companyFraction.Value/100)}",
-                    "Calibri", 11, (15.73, 57), applyBorders: true);
-                
+                        $"{Convert.ToDecimal(excelValues.InsuranceAmount_LiabilityLimit) * (companyFraction.Value / 100)}",
+                        "Calibri", 11, (15.73, 57), applyBorders: true);
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 10,
                         $"{Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100}",
                         "Calibri", 11, (10.6, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 11,
                         $"{excelValues.ReinsurerCommissionPercent}",
                         "Calibri", 11, (10.13, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 12,
-                        $"{(Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100) * (Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)/100)}",
+                        $"{(Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100) * (Convert.ToDecimal(excelValues.ReinsurerCommissionPercent) / 100)}",
                         "Calibri", 11, (11, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 13,
-                        $"{(Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100) * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100)}",
+                        $"{(Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100) * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100)}",
                         "Calibri", 11, (10.4, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 14,
                         $"{excelValues.PremiumPercent}",
                         "Calibri", 11, (11.4, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 15,
                         $"{excelValues.PaymentRate_ReturnRate}",
                         "Calibri", 11, (11.73, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 16,
                         $"{Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100
-                            * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100)
+                           * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100)
                            * Convert.ToDecimal(excelValues.PremiumPercent) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate)}",
                         "Calibri", 11, (12.87, 57), applyBorders: true);
 
                     reportingPeriodSum += Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100
-                                           * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100) *
-                                          Convert.ToDecimal(excelValues.PremiumPercent) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                                          * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100) *
+                                          Convert.ToDecimal(excelValues.PremiumPercent) *
+                                          Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
                 }
                 else if (string.IsNullOrWhiteSpace(excelValues.PaymentNumber))
                 {
                     ExcelHelper.SetCellValue(sheet, rowCount, 9,
-                    $"{Convert.ToDecimal(excelValues.InsuranceAmount_LiabilityLimit) * (companyFraction.Value/100)}",
-                    "Calibri", 11, (15.73, 57), applyBorders: true);
-                
+                        $"{Convert.ToDecimal(excelValues.InsuranceAmount_LiabilityLimit) * (companyFraction.Value / 100)}",
+                        "Calibri", 11, (15.73, 57), applyBorders: true);
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 10,
                         $"{Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100}",
                         "Calibri", 11, (10.6, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 11,
                         $"{excelValues.ReinsurerCommissionPercent}",
                         "Calibri", 11, (10.13, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 12,
-                        $"{(Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100) * (Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)/100)}",
+                        $"{(Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100) * (Convert.ToDecimal(excelValues.ReinsurerCommissionPercent) / 100)}",
                         "Calibri", 11, (11, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 13,
-                        $"{(Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100) * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100)}",
+                        $"{(Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100) * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100)}",
                         "Calibri", 11, (10.4, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 14,
                         $"{excelValues.PremiumPercent}",
                         "Calibri", 11, (11.4, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 15,
                         $"{excelValues.PaymentRate_ReturnRate}",
                         "Calibri", 11, (11.73, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 16,
                         $"{Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100
-                            * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100)
+                           * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100)
                            * Convert.ToDecimal(excelValues.PremiumPercent) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate)}",
                         "Calibri", 11, (12.87, 57), applyBorders: true);
 
                     reportingPeriodSum += Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100
-                                           * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100) *
-                                          Convert.ToDecimal(excelValues.PremiumPercent) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                                          * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100) *
+                                          Convert.ToDecimal(excelValues.PremiumPercent) *
+                                          Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
                 }
                 else
                 {
                     ExcelHelper.SetCellValue(sheet, rowCount, 9,
                         "0",
-                    "Calibri", 11, (15.73, 57), applyBorders: true);
-                
+                        "Calibri", 11, (15.73, 57), applyBorders: true);
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 10,
                         "0",
                         "Calibri", 11, (10.6, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 11,
                         $"{excelValues.ReinsurerCommissionPercent}",
                         "Calibri", 11, (10.13, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 12,
                         "0",
                         "Calibri", 11, (11, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 13,
                         "0",
                         "Calibri", 11, (10.4, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 14,
                         $"{excelValues.PremiumPercent}",
                         "Calibri", 11, (11.4, 57), applyBorders: true);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 15,
                         $"{excelValues.PaymentRate_ReturnRate}",
                         "Calibri", 11, (11.73, 57), applyBorders: true);
-                    
+
                     // ExcelHelper.SetCellValue(sheet, rowCount, 16,
                     //     $"{Convert.ToDecimal(excelValues.PaymentSumm) * companyFraction.Value / 100 * Convert.ToDecimal(excelValues.PremiumPercent) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate)}",
                     //     "Calibri", 11, (12.87, 57), applyBorders: true);
                     //
                     // reportingPeriodSum += Convert.ToDecimal(excelValues.PaymentSumm) * companyFraction.Value / 100 * Convert.ToDecimal(excelValues.PremiumPercent) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
-                    
+
                     ExcelHelper.SetCellValue(sheet, rowCount, 16,
                         $"{Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100
-                           * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100)
+                           * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100)
                            * Convert.ToDecimal(excelValues.PremiumPercent) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate)}",
                         "Calibri", 11, (12.87, 57), applyBorders: true);
 
                     reportingPeriodSum += Convert.ToDecimal(excelValues.AccruedBonus100) * companyFraction.Value / 100
-                                          * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100)
-                                          * Convert.ToDecimal(excelValues.PremiumPercent) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                                          * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100)
+                                          * Convert.ToDecimal(excelValues.PremiumPercent) *
+                                          Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
                 }
-                
+
                 ExcelHelper.SetCellValue(sheet, rowCount, 17,
                     $"{excelValues.PaymentNumber} / {excelValues.PaymentDate} / {companyFraction.Value} / {excelValues.SanctionsRisk} / {excelValues.Comment}",
                     "Calibri", 11, (16.27, 57), applyBorders: true);
-                
+
                 ExcelHelper.SetCellValue(sheet, rowCount, 18,
                     $"{excelValues.PaymentContract}",
                     "Calibri", 11, (16.27, 57), applyBorders: true);
-                
+
                 ExcelHelper.SetCellValue(sheet, rowCount, 19,
                     $"{excelValues.InsuranceType}",
                     "Calibri", 11, (16, 57), applyBorders: true);
 
                 rowCount++;
                 number++;
-                return true; 
             }
-            return false; 
-        });
-        
+        }
+
         ExcelHelper.SetCellValue(sheet, rowCount, 13,
             "Итого по договорам отчетного периода:",
             "Calibri", 10, (11, 14.3), applyBorders: true);

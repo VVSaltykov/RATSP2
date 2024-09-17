@@ -250,46 +250,6 @@ public static class DebitFunctions
         ExcelHelper.SetCellValue(sheet, 19, 3,
             $"{sumAdminCommissionPaid}", "Calibri", 10, (19.6, 29), applyBorders: true);
         
-        ExcelHelper.SetCellValue(sheet, 20, 1,
-            "5", "Calibri", 10, (6.87, 29), applyBorders: true);
-        
-        ExcelHelper.SetCellValue(sheet, 20, 2,
-            "Доля в оплаченных убытках (по чужим договорам)",
-            "Calibri", 10, (43, 29), applyBorders: true);
-        
-        ExcelHelper.SetCellValue(sheet, 20, 3,
-            "", "Calibri", 10, (19.6, 29), applyBorders: true);
-        
-        ExcelHelper.SetCellValue(sheet, 21, 1,
-            "5,1", "Calibri", 10, (6.87, 29), applyBorders: true);
-        
-        ExcelHelper.SetCellValue(sheet, 21, 2,
-            "Предыдущий(е) отчётный(е) период(ы)",
-            "Calibri", 10, (43, 29), applyBorders: true);
-        
-        ExcelHelper.SetCellValue(sheet, 21, 3,
-            "", "Calibri", 10, (19.6, 29), applyBorders: true);
-        
-        ExcelHelper.SetCellValue(sheet, 22, 1,
-            "5,2", "Calibri", 10, (6.87, 29), applyBorders: true);
-        
-        ExcelHelper.SetCellValue(sheet, 22, 2,
-            "Отчётный период",
-            "Calibri", 10, (43, 29), applyBorders: true);
-        
-        ExcelHelper.SetCellValue(sheet, 22, 3,
-            "", "Calibri", 10, (19.6, 29), applyBorders: true);
-        
-        ExcelHelper.SetCellValue(sheet, 23, 1,
-            "6", "Calibri", 10, (6.87, 29), applyBorders: true);
-        
-        ExcelHelper.SetCellValue(sheet, 23, 2,
-            "Доля в кассовых убытках",
-            "Calibri", 10, (43, 29), applyBorders: true);
-        
-        ExcelHelper.SetCellValue(sheet, 23, 3,
-            "", "Calibri", 10, (19.6, 29), applyBorders: true);
-        
         ExcelHelper.SetCellValue(sheet, 24, 1,
             "", "Calibri", 10, (6.87, 29), applyBorders: true);
         
