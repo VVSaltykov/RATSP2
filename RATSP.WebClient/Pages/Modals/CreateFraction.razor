@@ -39,6 +39,18 @@
             <RadzenNumeric @bind-Value="@Fraction.Value" Name="Value" />
         </div>
     </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Санкционность" />
+        </div>
+        <div class="col">
+            <RadzenDropDown @bind-Value="@Fraction.Sanctionality"
+                            Data="@sanctionalityOptions"
+                            TextProperty="Value"
+                            ValueProperty="Key"
+                            TValue="bool" />
+        </div>
+    </div>
     <div class="row justify-content-center">
         <div class="col-md-3"></div>
         <div class="col-md-6 text-center">
@@ -52,6 +64,12 @@
     private Fraction Fraction { get; set; } = new();
     private List<Company> Companies = new List<Company>();
     private Guid SelectedCompanyId { get; set; }
+    
+    private List<KeyValuePair<bool, string>> sanctionalityOptions = new List<KeyValuePair<bool, string>> 
+    {
+        new KeyValuePair<bool, string>(true, "Да"),
+        new KeyValuePair<bool, string>(false, "Нет")
+    };
     
     protected override async void OnInitialized()
     {
