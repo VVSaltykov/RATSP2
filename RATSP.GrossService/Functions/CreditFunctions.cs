@@ -14,6 +14,8 @@ public static class CreditFunctions
         decimal reportingPerioudGross = 0;
         decimal reportingPerioudInsurerCommision = 0;
         decimal reportingPerioudNetPremium = 0;
+        decimal previousPerioudGross = 0;
+        decimal previousPeriodNetPremium = 0;
         decimal sumGrossPremiumPaid = 0;
         decimal sumCommisionPaid = 0;
         decimal sumNetPremiumPaid = 0;
@@ -68,25 +70,73 @@ public static class CreditFunctions
         ExcelHelper.SetCellValue(sheet, 9, 2,
             "Брутто-премия к начислению по доле участия в РАТСП",
             "Calibri", 10, (43, 29), applyBorders: true);
-        
+
         foreach (var excelValues in excelValuesList)
         {
-            if (DateOnly.Parse(excelValues.StartDate) >= companyFraction.Start &&
-                DateOnly.Parse(excelValues.StartDate) <= companyFraction.End && excelValues.Insurer != company.Name)
+            try
             {
-                reportingPerioudGross += (Convert.ToDecimal(excelValues.AccruedBonus100)) * (Convert.ToDecimal(companyFraction.Value) / 100)
-                                            * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
-            
-                reportingPerioudNetPremium += (Convert.ToDecimal(excelValues.AccruedBonus100) * (companyFraction.Value / 100)
-                                                  * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate))
-                                              * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100);
-            
-                reportingPerioudInsurerCommision = reportingPerioudGross - reportingPerioudNetPremium;
+                if (DateOnly.Parse(excelValues.StartDate) >= companyFraction.Start &&
+                DateOnly.Parse(excelValues.StartDate) <= companyFraction.End && excelValues.Insurer != company.Name
+                && (excelValues.PaymentNumber == "1" || string.IsNullOrWhiteSpace(excelValues.PaymentNumber)))
+                {
+                    reportingPerioudGross += (Convert.ToDecimal(excelValues.AccruedBonus100)) * (companyFraction.Value / 100)
+                                                * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                
+                    reportingPerioudNetPremium += (Convert.ToDecimal(excelValues.AccruedBonus100)) * (companyFraction.Value / 100)
+                        * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate)
+                        * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100);
+                }
+                else
+                {
+                    bool sanctionality = false;
+                    
+                    string[] keywords = { "корректировка", "расторжение", "увеличение", "снятие", "снижение", "премия", "продление" };
+
+                    if (excelValues.SanctionsRisk == "Да") sanctionality = true;
+                    
+                    var _companyFraction = fractions.FirstOrDefault(f => f.CompanyId == company.Id &&
+                                                                         f.Start <= DateOnly.Parse(excelValues.StartDate) &&
+                                                                         f.End >= DateOnly.Parse(excelValues.StartDate) &&
+                                                                         f.Sanctionality == sanctionality);
+
+                    if (keywords.Any(k => excelValues.Comment.ToLower().Contains(k)))
+                    {
+                        if (string.IsNullOrWhiteSpace(excelValues.PaymentSumm))
+                        {
+                            previousPerioudGross += (Convert.ToDecimal(excelValues.AccruedBonus100)) * (_companyFraction.Value / 100)
+                                * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                    
+                            previousPeriodNetPremium += (Convert.ToDecimal(excelValues.AccruedBonus100)) * (_companyFraction.Value / 100)
+                                * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate)
+                                * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100);
+                        }
+                        else
+                        {
+                            previousPerioudGross += Convert.ToDecimal(excelValues.PaymentSumm) * _companyFraction.Value / 100 
+                                                    * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                    
+                            previousPeriodNetPremium += Convert.ToDecimal(excelValues.PaymentSumm) * _companyFraction.Value / 100 
+                                                        * Convert.ToDecimal(excelValues.PremiumPercent) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                        }
+                    }
+                    else
+                    {
+                        previousPerioudGross += 0;
+                        previousPeriodNetPremium += 0;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
         }
+        
+        reportingPerioudInsurerCommision = (reportingPerioudGross + previousPerioudGross) - (reportingPerioudNetPremium + previousPeriodNetPremium);
 
         ExcelHelper.SetCellValue(sheet, 9, 3,
-            $"{reportingPerioudGross}", "Calibri", 10, (19.6, 29), applyBorders: true);
+            $"{reportingPerioudGross + previousPerioudGross}", "Calibri", 10, (19.6, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 10, 1,
             "1,2", "Calibri", 10, (6.87, 29), applyBorders: true);
@@ -106,7 +156,7 @@ public static class CreditFunctions
             "Calibri", 10, (43, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 11, 3,
-            $"{reportingPerioudNetPremium}", "Calibri", 10, (19.6, 29), applyBorders: true);
+            $"{reportingPerioudNetPremium + previousPeriodNetPremium}", "Calibri", 10, (19.6, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 12, 1,
             "2", "Calibri", 10, (6.87, 29), applyBorders: true);
@@ -136,61 +186,85 @@ public static class CreditFunctions
         {
             try
             {
-                bool sanctionality = false;
+                if (excelValues.Insurer != company.Name)
+                {
+                    bool sanctionality = false;
 
-                if (excelValues.SanctionsRisk == "Да") sanctionality = true;
+                    if (excelValues.SanctionsRisk == "Да") sanctionality = true;
+                    
+                    decimal _netPremium;
+                    decimal _grossPremium;
                 
-                decimal _netPremium;
-                decimal _grossPremium;
-            
-                var _companyFraction = fractions.FirstOrDefault(f => f.CompanyId == company.Id &&
-                                                                     f.Start <= DateOnly.Parse(excelValues.StartDate) &&
-                                                                     f.End >= DateOnly.Parse(excelValues.StartDate) &&
-                                                                     f.Sanctionality == sanctionality);
+                    var _companyFraction = fractions.FirstOrDefault(f => f.CompanyId == company.Id &&
+                                                                         f.Start <= DateOnly.Parse(excelValues.StartDate) &&
+                                                                         f.End >= DateOnly.Parse(excelValues.StartDate) &&
+                                                                         f.Sanctionality == sanctionality);
 
-                if (excelValues.PaymentNumber == "1" && excelValues.Insurer != company.Name)
-                {
-                    _netPremium = Convert.ToDecimal(excelValues.AccruedBonus100) * _companyFraction.Value / 100
-                                  * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100)
-                                  * Convert.ToDecimal(excelValues.PremiumPercent) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
-                    
-                    _grossPremium = _netPremium / ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100);
-                }
-                else if (string.IsNullOrWhiteSpace(excelValues.PaymentNumber) && excelValues.Insurer != company.Name)
-                {
-                    _netPremium = Convert.ToDecimal(excelValues.AccruedBonus100) * _companyFraction.Value / 100
-                                  * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100)
-                                  * Convert.ToDecimal(excelValues.PremiumPercent) *
-                                  Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
-                    
-                    _grossPremium = _netPremium / ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100);
-                }
-                else
-                {
-                    _netPremium = Convert.ToDecimal(excelValues.AccruedBonus100) * _companyFraction.Value / 100
-                                  * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100)
-                                  * Convert.ToDecimal(excelValues.PremiumPercent) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
-
-                    _grossPremium = _netPremium /
-                                    ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100);
-                }
-            
-                if (_netPremium > 0)
-                {
-                    sumNetPremiumPaid += _netPremium;
-                }
-                else
-                {
-                    netPremium = _netPremium;
-                }
-            
-                if (_grossPremium > 0)
-                {
-                    sumGrossPremiumPaid += _grossPremium;
-                }
-                else
-                {
-                    grossPremium = _grossPremium;
+                    if (excelValues.PaymentNumber == "1")
+                    {
+                        _netPremium = Convert.ToDecimal(excelValues.AccruedBonus100) * _companyFraction.Value / 100
+                                      * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100)
+                                      * Convert.ToDecimal(excelValues.PremiumPercent)
+                                      * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                        
+                        _grossPremium = _netPremium / ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100);
+                    }
+                    else if (string.IsNullOrWhiteSpace(excelValues.PaymentNumber))
+                    {
+                        _netPremium = Convert.ToDecimal(excelValues.AccruedBonus100) * _companyFraction.Value / 100
+                                      * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100)
+                                      * Convert.ToDecimal(excelValues.PremiumPercent)
+                                      * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                        
+                        _grossPremium = _netPremium / ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100);
+                    }
+                    else
+                    {
+                        // if (string.IsNullOrWhiteSpace(excelValues.PaymentSumm))
+                        // {
+                        //     _netPremium = Convert.ToDecimal(excelValues.AccruedBonus100) * _companyFraction.Value / 100
+                        //                   * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100)
+                        //                   * Convert.ToDecimal(excelValues.PremiumPercent)
+                        //                   * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                        //
+                        //     _grossPremium = _netPremium /
+                        //                     ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100);
+                        // }
+                        // else
+                        // {
+                        //     _netPremium = Convert.ToDecimal(excelValues.PaymentSumm) * _companyFraction.Value / 100 
+                        //                   * Convert.ToDecimal(excelValues.PremiumPercent) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                        //     
+                        //     _grossPremium = Convert.ToDecimal(excelValues.PaymentSumm) * _companyFraction.Value / 100
+                        //                     * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                        // }
+                        
+                        _netPremium = Convert.ToDecimal(excelValues.AccruedBonus100) * _companyFraction.Value / 100
+                                      * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100)
+                                      * Convert.ToDecimal(excelValues.PremiumPercent)
+                                      * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                        
+                        _grossPremium = _netPremium /
+                                        ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100);
+                    }
+                
+                    if (_netPremium >= 0)
+                    {
+                        sumNetPremiumPaid += _netPremium;
+                    }
+                    else
+                    {
+                        netPremium += _netPremium;
+                    }
+                
+                    if (_grossPremium >= 0)
+                    {
+                        sumGrossPremiumPaid += _grossPremium;
+                    }
+                    else
+                    {
+                        grossPremium += _grossPremium;
+                    }   
                 }
             }
             catch (Exception e)
@@ -268,14 +342,14 @@ public static class CreditFunctions
             "Calibri", 10, (43, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 22, 3,
-            $"{sumNetPremiumPaid - netPremium}", "Calibri", 10, (19.6, 29), applyBorders: true);
+            $"{sumNetPremiumPaid + netPremium}", "Calibri", 10, (19.6, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 25, 1,
             "Итого к перечислению комиссионного вознаграждения администратора (рублей):",
             "Calibri", 11, (6.87, 31.1));
         
         ExcelHelper.SetCellValue(sheet, 25, 3,
-            $"{sumNetPremiumPaid - netPremium}", "Calibri", 11, (19.6, 31.1));
+            $"{sumNetPremiumPaid + netPremium}", "Calibri", 11, (19.6, 31.1));
         
         ExcelHelper.SetCellValue(sheet, 27, 1,
             "Данная сумма будет перечислена на счет Вашей компании.",

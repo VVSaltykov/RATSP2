@@ -162,7 +162,7 @@ public static class DebitFunctions
             }
             else
             {
-                netPremium = _netPremium;
+                netPremium += _netPremium;
             }
             
             if (_grossPremium > 0)
@@ -171,7 +171,7 @@ public static class DebitFunctions
             }
             else
             {
-                grossPremium = _grossPremium;
+                grossPremium += _grossPremium;
             }
         }
         
