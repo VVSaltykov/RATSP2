@@ -26,7 +26,11 @@ public class Program
         builder.Services.AddTransient<ExcelValuesService>();
 
         // Добавляем поддержку gRPC
-        builder.Services.AddGrpc();
+        builder.Services.AddGrpc(options =>
+        {
+            options.MaxReceiveMessageSize = 10 * 1024 * 1024; // 10 MB
+            options.MaxSendMessageSize = 10 * 1024 * 1024;    // 10 MB
+        });
 
         // Настраиваем CORS для поддержки вызовов с клиента Blazor
         builder.Services.AddCors(options =>

@@ -27,7 +27,9 @@ public class Program
 
             return GrpcChannel.ForAddress("https://localhost:7123", new GrpcChannelOptions
             {
-                HttpHandler = httpHandler
+                HttpHandler = httpHandler,
+                MaxReceiveMessageSize = 10 * 1024 * 1024, // Устанавливаем лимит на получение сообщения
+                MaxSendMessageSize = 10 * 1024 * 1024 
             });
         });
         

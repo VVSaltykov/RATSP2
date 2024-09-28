@@ -26,7 +26,7 @@ public static class DebitFunctions
             .ToString("dd MMMM yyyy г.", new CultureInfo("ru-RU"));
         
         var companyFraction = fractions.FirstOrDefault(f => f.CompanyId == company.Id &&
-                                                            f.Start < selectedDate && f.End > selectedDate);
+                                                            f.Start <= selectedDate && f.End >= selectedDate);
 
         excelValuesList = excelValuesList.Where(c => c.Insurer == company.Name).ToList();
         
@@ -136,42 +136,88 @@ public static class DebitFunctions
         
         foreach (var excelValues in excelValuesList)
         {
-            decimal _netPremium;
-            decimal _grossPremium;
+            if (DateOnly.Parse(excelValues.StartDate) < companyFraction.Start)
+            {
+                bool sanctionality = false;
 
-            if (excelValues.NetPremium == "0")
-            {
-                _netPremium = Convert.ToDecimal(excelValues.RefundPremium) *
-                                      Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                if (excelValues.SanctionsRisk == "Да") sanctionality = true;
+
+                decimal _netPremium;
+                decimal _grossPremium;
+
+                var _companyFraction = fractions.FirstOrDefault(f => f.CompanyId == company.Id &&
+                                                                     f.Start <= DateOnly.Parse(excelValues.StartDate) &&
+                                                                     f.End >= DateOnly.Parse(excelValues.StartDate) &&
+                                                                     f.Sanctionality == sanctionality);
                 
-                decimal commissionPortion = (100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100;
-                _grossPremium = _netPremium / commissionPortion;
-            }
-            else
-            {
-                _netPremium = Convert.ToDecimal(excelValues.NetPremium) *
-                                      Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                if (_companyFraction != null)
+                {
+                    if (excelValues.PaymentNumber == "1")
+                    {
+                        _netPremium = Convert.ToDecimal(excelValues.AccruedBonus100) * _companyFraction.Value / 100
+                                      * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100)
+                                      * Convert.ToDecimal(excelValues.PremiumPercent)
+                                      * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                        
+                        _grossPremium = _netPremium / ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100);
+                    }
+                    else if (string.IsNullOrWhiteSpace(excelValues.PaymentNumber))
+                    {
+                        _netPremium = Convert.ToDecimal(excelValues.AccruedBonus100) * _companyFraction.Value / 100
+                                      * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100)
+                                      * Convert.ToDecimal(excelValues.PremiumPercent)
+                                      * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                        
+                        _grossPremium = _netPremium / ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100);
+                    }
+                    else
+                    {
+                        // if (string.IsNullOrWhiteSpace(excelValues.PaymentSumm))
+                        // {
+                        //     _netPremium = Convert.ToDecimal(excelValues.AccruedBonus100) * _companyFraction.Value / 100
+                        //                   * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100)
+                        //                   * Convert.ToDecimal(excelValues.PremiumPercent)
+                        //                   * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                        //
+                        //     _grossPremium = _netPremium /
+                        //                     ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100);
+                        // }
+                        // else
+                        // {
+                        //     _netPremium = Convert.ToDecimal(excelValues.PaymentSumm) * _companyFraction.Value / 100 
+                        //                   * Convert.ToDecimal(excelValues.PremiumPercent) * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                        //     
+                        //     _grossPremium = Convert.ToDecimal(excelValues.PaymentSumm) * _companyFraction.Value / 100
+                        //                     * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                        // }
+                        
+                        _netPremium = Convert.ToDecimal(excelValues.AccruedBonus100) * _companyFraction.Value / 100
+                                      * ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent))/100)
+                                      * Convert.ToDecimal(excelValues.PremiumPercent)
+                                      * Convert.ToDecimal(excelValues.PaymentRate_ReturnRate);
+                        
+                        _grossPremium = _netPremium /
+                                        ((100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100);
+                    }
                 
-                decimal commissionPortion = (100 - Convert.ToDecimal(excelValues.ReinsurerCommissionPercent)) / 100;
-                _grossPremium = _netPremium / commissionPortion;
-            }
-            
-            if (_netPremium > 0)
-            {
-                sumNetPremiumPaid += _netPremium;
-            }
-            else
-            {
-                netPremium += _netPremium;
-            }
-            
-            if (_grossPremium > 0)
-            {
-                sumGrossPremiumPaid += _grossPremium;
-            }
-            else
-            {
-                grossPremium += _grossPremium;
+                    if (_netPremium >= 0)
+                    {
+                        sumNetPremiumPaid += _netPremium;
+                    }
+                    else
+                    {
+                        netPremium += _netPremium;
+                    }
+                
+                    if (_grossPremium >= 0)
+                    {
+                        sumGrossPremiumPaid += _grossPremium;
+                    }
+                    else
+                    {
+                        grossPremium += _grossPremium;
+                    }   
+                }
             }
         }
         
