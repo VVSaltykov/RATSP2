@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using RATSP.API.Repositories;
+using RATSP.Common.Services;
 
 namespace RATSP.API;
 
@@ -33,6 +34,9 @@ public class Program
         
         builder.Services.AddTransient<CompaniesRepository>();
         builder.Services.AddTransient<FractionRepository>();
+        
+        builder.Services.AddSingleton<KafkaProducer>(sp => 
+            new KafkaProducer("localhost:9093"));
         
         // Add services to the container.
         builder.Services.AddAuthorization();

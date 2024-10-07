@@ -3,9 +3,9 @@ using RATSP.WebCommon.Models;
 
 namespace RATSP.GrossService.Services;
 
-public partial class ExcelValuesService
+public class ExcelValuesService
 {
-    public List<ExcelValues> AddExcelValues(IWorkbook workBook)
+    public async Task<List<ExcelValues>> AddExcelValues(IWorkbook workBook)
     {
         List<ExcelValues> excelValuesList = new List<ExcelValues>();
         ISheet sheet = workBook.GetSheetAt(0);

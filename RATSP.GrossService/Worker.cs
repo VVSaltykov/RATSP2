@@ -1,3 +1,5 @@
+using RATSP.GrossService.Services;
+
 namespace RATSP.GrossService;
 
 public class Worker : BackgroundService
