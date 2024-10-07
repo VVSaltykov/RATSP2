@@ -1,4 +1,5 @@
-﻿using NPOI.SS.UserModel;
+﻿using System.Diagnostics.CodeAnalysis;
+using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using RATSP.Common.Models;
 using RATSP.GrossService.Functions;
@@ -6,9 +7,9 @@ using RATSP.WebCommon.Models;
 
 namespace RATSP.GrossService.Services;
 
-public partial class ExcelService
+public class ExcelService
 {
-    public async Task<List<byte[]>> CreateExcelDocuments(List<ExcelValues> excelValuesList,
+    public Task<List<byte[]>> CreateExcelDocuments(List<ExcelValues> excelValuesList,
         List<Company> selectedCompanies, List<Fraction> fractions,
         DateOnly selectedDate, bool GrossIn, bool GrossOut, bool Debit, bool Credit)
     {
@@ -63,6 +64,6 @@ public partial class ExcelService
         {
             
         }
-        return excelByteArrays;
+        return Task.FromResult(excelByteArrays);
     }
 }

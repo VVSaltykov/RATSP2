@@ -1,0 +1,82 @@
+﻿version: '3.8'
+
+services:
+#  api:
+#    build:
+#      context: ./
+#      dockerfile: RATSP.API/Dockerfile
+#    ports:
+#      - "5027:5027"
+#    depends_on:
+#      - gross-service
+#      - kafka
+#    networks:
+#      - ratsp-network
+#    environment:
+#      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=ratspdb;Username=postgres;Password=MyPassword123!
+#
+#  gross-service:
+#    build:
+#      context: ./
+#      dockerfile: RATSP.GrossService/Dockerfile
+#    depends_on:
+#      - kafka
+#    networks:
+#      - ratsp-network
+#    environment:
+#      - Kafka__BootstrapServers=kafka:9092  # указываем, что сервис gross-service будет подключаться к Kafka
+#
+#  webclient:
+#    build:
+#      context: ./
+#      dockerfile: RATSP.WebClient/Dockerfile
+#    ports:
+#      - "5227:5227"
+#    depends_on:
+#      - kafka
+#    networks:
+#      - ratsp-network
+#    environment:
+#      - Kafka__BootstrapServers=kafka:9092  # указываем адрес Kafka для webclient
+#
+#  db:
+#    image: postgres:15
+#    environment:
+#      POSTGRES_DB: ratspdb
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: MyPassword123!
+#    ports:
+#      - "5432:5432"
+#    networks:
+#      - ratsp-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.2.1
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - ratsp-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.2.1
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"  # добавлено для PLAINTEXT_HOST
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - ratsp-network
+
+networks:
+  ratsp-network:
+    driver: bridge

@@ -1,14 +1,11 @@
 ﻿@page "/"
-@using NPOI.SS.UserModel
-@using NPOI.XSSF.UserModel
 @using System.IO
 @using System.IO.Compression
+@using System.Net
+@using Newtonsoft.Json
 @using RATSP.Common.Interfaces
 @using RATSP.Common.Models
-@using RATSP.GrossService.Services
 @using RATSP.WebCommon.Models
-@inject ExcelService.ExcelServiceClient excelServiceClient
-@inject ExcelValuesService.ExcelValuesServiceClient excelValuesServiceClient
 @inject ICompaniesService ICompaniesService
 @inject IFractionsService IFractionService
 @inject IJSRuntime jsRuntime
@@ -119,7 +116,7 @@
         fileSelected = selectedFile != null;
         StateHasChanged();
     }
-
+    
     private async Task OnFileUpload()
     {
         if (selectedFile != null)
@@ -132,38 +129,38 @@
 
                 if (selectedFile.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                 {
+                    var base64Workbook = stream.ToArray();
+                    
                     var selectedCompaniesNames = _selectedCompanies.Select(company => company.Name).ToList();
-
-                    var request = new AddExcelValuesRequest
-                    {
-                        WorkbookBytes = Google.Protobuf.ByteString.CopyFrom(stream.ToArray())
-                    };
-
-                    var reply = await excelValuesServiceClient.AddExcelValuesAsync(request);
-                    var excelValuesList = reply.ExcelValuesList;
 
                     var createExcelRequest = new CreateExcelDocumentsRequest
                     {
-                        ExcelValuesList = { excelValuesList },
-                        SelectedCompanies = { selectedCompaniesNames },
+                        // Заполните необходимые поля
+                        SelectedCompanies =  selectedCompaniesNames ,
                         SelectedDate = Convert.ToString(selectedDate),
                         GrossIn = GrossIn,
                         GrossOut = GrossOut,
                         Debit = Debit,
-                        Credit = Credit
+                        Credit = Credit,
+                        WorkbookBytes = base64Workbook
                     };
 
-                    var createExcelReply = await excelServiceClient.CreateExcelDocumentsAsync(createExcelRequest);
+                    var jsonMessage = JsonConvert.SerializeObject(createExcelRequest);
+                    
+                    var content = new StringContent(jsonMessage, System.Text.Encoding.UTF8, "application/json");
 
-                    var files = new Dictionary<string, byte[]>();
-                    for (int i = 0; i < createExcelReply.ExcelFiles.Count; i++)
+                    using (var client = new HttpClient { BaseAddress = new Uri("https://localhost:7173") })
                     {
-                        files.Add($"file{i + 1}.xlsx", createExcelReply.ExcelFiles[i].ToByteArray());
+                        var response = await client.PostAsync("api/kafka/publish", content);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            Console.WriteLine("File uploaded successfully!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error uploading file.");
+                        }
                     }
-
-                    var zipFileBytes = CreateZipFile(files);
-                    var base64Zip = Convert.ToBase64String(zipFileBytes);
-                    await jsRuntime.InvokeVoidAsync("downloadZip", base64Zip);
                 }
                 else
                 {
@@ -176,6 +173,7 @@
             }
         }
     }
+
     
     private static byte[] CreateZipFile(Dictionary<string, byte[]> files)
     {

@@ -1,0 +1,60 @@
+# This is a generated file. Not intended for manual editing.
+version: "3.8"
+services:
+  api:
+    build:
+      context: "C:\\Users\\vitya\\RiderProjects\\RATSP2"
+      dockerfile: "RATSP.API/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/RATSP.API.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "ratsp.api:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\vitya\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\vitya\\RiderProjects\\RATSP2\\RATSP.API:/app:rw"
+    - "C:\\Users\\vitya\\RiderProjects\\RATSP2:/src:rw"
+    working_dir: "/app"
+  gross-service:
+    build:
+      context: "C:\\Users\\vitya\\RiderProjects\\RATSP2"
+      dockerfile: "RATSP.GrossService/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/RATSP.GrossService.dll"
+    environment:
+      DOTNET_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "ratsp.grossservice:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\vitya\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\vitya\\RiderProjects\\RATSP2\\RATSP.GrossService:/app:rw"
+    - "C:\\Users\\vitya\\RiderProjects\\RATSP2:/src:rw"
+    working_dir: "/app"
+  webclient:
+    build:
+      context: "C:\\Users\\vitya\\RiderProjects\\RATSP2"
+      dockerfile: "RATSP.WebClient/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/../../../.nuget/packages/microsoft.aspnetcore.components.webassembly.devserver/8.0.2/tools/blazor-devserver.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "ratsp.webclient:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\vitya\\.nuget\\packages:/home/app/.nuget/packages"
+    - "C:\\Users\\vitya\\RiderProjects\\RATSP2\\RATSP.WebClient:/app:rw"
+    - "C:\\Users\\vitya\\RiderProjects\\RATSP2:/src:rw"
+    working_dir: "/app"
