@@ -82,7 +82,7 @@
         get { return selectedFile != null; }
         set {}
     }
-    
+
     private DateOnly selectedDate;
     private bool GrossIn;
     private bool GrossOut;
@@ -94,20 +94,24 @@
     private RadzenDataGrid<Company> companyGrid;
     private IEnumerable<Company> Companies { get; set; } = new List<Company>();
     private List<Fraction> Fractions { get; set; } = new List<Fraction>();
-    
+
     private List<ExcelValues> excelValuesList { get; set; } = new List<ExcelValues>();
-    
+
     protected override async Task OnInitializedAsync()
     {
-        Companies = await ICompaniesService.Read();
-
-        var fractionTasks = Companies.Select(company => IFractionService.ReadByCompany(company));
-        var fractionResults = await Task.WhenAll(fractionTasks);
-
-        foreach (var fractions in fractionResults)
+        try
         {
-            Fractions.AddRange(fractions);
+            Companies = await ICompaniesService.Read();
+
+            var fractionTasks = Companies.Select(company => IFractionService.ReadByCompany(company));
+            var fractionResults = await Task.WhenAll(fractionTasks);
+
+            foreach (var fractions in fractionResults)
+            {
+                Fractions.AddRange(fractions);
+            }
         }
+        catch (Exception ex){}
     }   
     
     private void OnFileChange(UploadChangeEventArgs args)
@@ -159,6 +163,18 @@
                         else
                         {
                             Console.WriteLine("Error uploading file.");
+                        }
+
+                        response = await client.GetAsync("api/kafka/GetExcelDocument");
+                        if (response.IsSuccessStatusCode)
+                        {
+                            // Вызываем JavaScript функцию для скачивания
+                            await jsRuntime.InvokeVoidAsync("downloadZip", response);
+                            Console.WriteLine("File downloaded successfully!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error downloading file.");
                         }
                     }
                 }

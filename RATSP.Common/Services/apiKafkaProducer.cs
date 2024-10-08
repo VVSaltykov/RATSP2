@@ -2,11 +2,11 @@
 
 namespace RATSP.Common.Services;
 
-public class KafkaProducer
+public class apiKafkaProducer
 {
     private readonly IProducer<Null, string> _producer;
 
-    public KafkaProducer(string bootstrapServers)
+    public apiKafkaProducer(string bootstrapServers)
     {
         var config = new ProducerConfig { BootstrapServers = bootstrapServers };
         _producer = new ProducerBuilder<Null, string>(config).Build();

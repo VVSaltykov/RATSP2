@@ -10,12 +10,12 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        
+
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
             options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnection"));
         });
-        
+
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowSpecificOrigin",
@@ -31,13 +31,19 @@ public class Program
         {
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
         });
-        
+
         builder.Services.AddTransient<CompaniesRepository>();
         builder.Services.AddTransient<FractionRepository>();
-        
-        builder.Services.AddSingleton<KafkaProducer>(sp => 
-            new KafkaProducer("localhost:9093"));
-        
+
+        builder.Services.AddSingleton<apiKafkaProducer>(sp =>
+            new apiKafkaProducer("localhost:9093"));
+
+        builder.Services.AddSingleton(sp => new apiKafkaConsumer(
+                    "localhost:9093",                        // BootstrapServers
+                    "consumer-group-id",                     // GroupId
+                    "excel-documents-results-topic"
+                ));
+
         // Add services to the container.
         builder.Services.AddAuthorization();
 
@@ -46,7 +52,7 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
-        
+
         app.UseCors("AllowSpecificOrigin");
 
         // Configure the HTTP request pipeline.
@@ -57,11 +63,11 @@ public class Program
         }
 
         app.UseHttpsRedirection();
-        
+
         app.UseRouting();
 
         app.UseAuthorization();
-        
+
         app.MapControllers();
 
         app.Run();

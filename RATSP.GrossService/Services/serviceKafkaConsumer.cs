@@ -8,7 +8,7 @@ using RATSP.WebCommon.Models;
 
 namespace RATSP.GrossService.Services;
 
-public class KafkaConsumer
+public class serviceKafkaConsumer
 {
     private readonly IConsumer<Null, string> _consumer;
     private readonly string _topic;
@@ -16,9 +16,11 @@ public class KafkaConsumer
     private readonly ExcelValuesService excelValuesService;
     private readonly ICompaniesService companiesService;
     private readonly IFractionsService fractionsService;
+    private readonly serviceKafkaProducer _producer;
 
-    public KafkaConsumer(string bootstrapServers, string groupId, string topic, ExcelService _excelService,
-        ExcelValuesService _excelValuesService, ICompaniesService _companiesService, IFractionsService _fractionsService)
+    public serviceKafkaConsumer(string bootstrapServers, string groupId, string topic, ExcelService _excelService,
+        ExcelValuesService _excelValuesService, ICompaniesService _companiesService, IFractionsService _fractionsService,
+        serviceKafkaProducer producer)
     {
         var config = new ConsumerConfig
         {
@@ -33,9 +35,10 @@ public class KafkaConsumer
         excelValuesService = _excelValuesService;
         companiesService = _companiesService;
         fractionsService = _fractionsService;
+        _producer = producer;
     }
 
-    public void StartConsuming()
+    public async void StartConsuming()
     {
         _consumer.Subscribe(_topic);
 
@@ -50,7 +53,7 @@ public class KafkaConsumer
                 var createExcelRequest = JsonConvert.DeserializeObject<CreateExcelDocumentsRequest>(consumeResult.Message.Value);
                 
                 // Обработка запроса
-                ProcessCreateExcelRequest(createExcelRequest);
+                await ProcessCreateExcelRequest(createExcelRequest);
             }
         }
         catch (ConsumeException e)
@@ -95,12 +98,8 @@ public class KafkaConsumer
                 credit
             );
 
-            foreach (var excelDocument in excelDocuments)
-            {
-                var filePath = Path.Combine("path/to/save", $"ExcelDocument_{Guid.NewGuid()}.xlsx");
-                await File.WriteAllBytesAsync(filePath, excelDocument);
-                Console.WriteLine($"Excel document saved to: {filePath}");
-            }
+            var resultMessage = JsonConvert.SerializeObject(excelDocuments);
+            await _producer.SendMessageAsync("excel-documents-results-topic", resultMessage);
         }
         catch (Exception ex)
         {
