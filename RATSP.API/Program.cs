@@ -38,12 +38,6 @@ public class Program
         builder.Services.AddSingleton<apiKafkaProducer>(sp =>
             new apiKafkaProducer("localhost:9093"));
 
-        builder.Services.AddSingleton(sp => new apiKafkaConsumer(
-                    "localhost:9093",                        // BootstrapServers
-                    "consumer-group-id",                     // GroupId
-                    "excel-documents-results-topic"
-                ));
-
         // Add services to the container.
         builder.Services.AddAuthorization();
 

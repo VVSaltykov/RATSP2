@@ -22,9 +22,6 @@ public class Program
                 services.AddTransient<ExcelService>();
                 services.AddTransient<ExcelValuesService>();
 
-                services.AddSingleton<serviceKafkaProducer>(sp =>
-                    new serviceKafkaProducer("localhost:9093"));
-
                 // Настройка Kafka Consumer с передачей всех необходимых зависимостей
                 services.AddSingleton(sp => new serviceKafkaConsumer(
                     "localhost:9093",                        // BootstrapServers
@@ -33,8 +30,7 @@ public class Program
                     sp.GetRequiredService<ExcelService>(),   // ExcelService
                     sp.GetRequiredService<ExcelValuesService>(), // ExcelValuesService
                     sp.GetRequiredService<ICompaniesService>(),  // ICompaniesService
-                    sp.GetRequiredService<IFractionsService>(),   // IFractionsService
-                    sp.GetRequiredService<serviceKafkaProducer>()
+                    sp.GetRequiredService<IFractionsService>()   // IFractionsService
                 ));
             })
             .Build();

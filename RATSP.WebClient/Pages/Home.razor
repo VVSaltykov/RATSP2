@@ -139,7 +139,6 @@
 
                     var createExcelRequest = new CreateExcelDocumentsRequest
                     {
-                        // Заполните необходимые поля
                         SelectedCompanies =  selectedCompaniesNames ,
                         SelectedDate = Convert.ToString(selectedDate),
                         GrossIn = GrossIn,
@@ -163,18 +162,6 @@
                         else
                         {
                             Console.WriteLine("Error uploading file.");
-                        }
-
-                        response = await client.GetAsync("api/kafka/GetExcelDocument");
-                        if (response.IsSuccessStatusCode)
-                        {
-                            // Вызываем JavaScript функцию для скачивания
-                            await jsRuntime.InvokeVoidAsync("downloadZip", response);
-                            Console.WriteLine("File downloaded successfully!");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Error downloading file.");
                         }
                     }
                 }

@@ -1,4 +1,5 @@
-﻿using Confluent.Kafka;
+﻿using System.IO.Compression;
+using Confluent.Kafka;
 using Newtonsoft.Json;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -16,11 +17,9 @@ public class serviceKafkaConsumer
     private readonly ExcelValuesService excelValuesService;
     private readonly ICompaniesService companiesService;
     private readonly IFractionsService fractionsService;
-    private readonly serviceKafkaProducer _producer;
 
     public serviceKafkaConsumer(string bootstrapServers, string groupId, string topic, ExcelService _excelService,
-        ExcelValuesService _excelValuesService, ICompaniesService _companiesService, IFractionsService _fractionsService,
-        serviceKafkaProducer producer)
+        ExcelValuesService _excelValuesService, ICompaniesService _companiesService, IFractionsService _fractionsService)
     {
         var config = new ConsumerConfig
         {
@@ -35,7 +34,6 @@ public class serviceKafkaConsumer
         excelValuesService = _excelValuesService;
         companiesService = _companiesService;
         fractionsService = _fractionsService;
-        _producer = producer;
     }
 
     public async void StartConsuming()
@@ -98,12 +96,27 @@ public class serviceKafkaConsumer
                 credit
             );
 
-            var resultMessage = JsonConvert.SerializeObject(excelDocuments);
-            await _producer.SendMessageAsync("excel-documents-results-topic", resultMessage);
+            var zipArchiveBytes = await CreateZipArchive(excelDocuments);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error processing request: {ex.Message}");
         }
+    }
+    
+    private async Task<byte[]> CreateZipArchive(List<byte[]> excelDocuments)
+    {
+        using var memoryStream = new MemoryStream();
+        using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+        {
+            for (int i = 0; i < excelDocuments.Count; i++)
+            {
+                var entry = archive.CreateEntry($"document_{i + 1}.xlsx", CompressionLevel.Fastest);
+                using var entryStream = entry.Open();
+                await entryStream.WriteAsync(excelDocuments[i], 0, excelDocuments[i].Length);
+            }
+        }
+
+        return memoryStream.ToArray();
     }
 }
