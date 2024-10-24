@@ -1,7 +1,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using RATSP.API.Repositories;
+using RATSP.Common.Interfaces;
 using RATSP.Common.Services;
+using StackExchange.Redis;
 
 namespace RATSP.API;
 
@@ -26,6 +28,15 @@ public class Program
                         .AllowAnyMethod();
                 });
         });
+
+        builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+        {
+            var configuration = ConfigurationOptions.Parse("localhost:6379");
+            return ConnectionMultiplexer.Connect(configuration);
+        });
+
+        builder.Services.AddSingleton<IRedisService, RedisService>();
+
 
         builder.Services.AddControllers().AddNewtonsoftJson(options =>
         {

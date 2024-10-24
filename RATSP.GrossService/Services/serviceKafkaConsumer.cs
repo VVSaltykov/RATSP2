@@ -17,9 +17,11 @@ public class serviceKafkaConsumer
     private readonly ExcelValuesService excelValuesService;
     private readonly ICompaniesService companiesService;
     private readonly IFractionsService fractionsService;
+    private readonly IRedisService _redisService;
 
     public serviceKafkaConsumer(string bootstrapServers, string groupId, string topic, ExcelService _excelService,
-        ExcelValuesService _excelValuesService, ICompaniesService _companiesService, IFractionsService _fractionsService)
+        ExcelValuesService _excelValuesService, ICompaniesService _companiesService, IFractionsService _fractionsService,
+        IRedisService redisService)
     {
         var config = new ConsumerConfig
         {
@@ -34,6 +36,7 @@ public class serviceKafkaConsumer
         excelValuesService = _excelValuesService;
         companiesService = _companiesService;
         fractionsService = _fractionsService;
+        _redisService = redisService;
     }
 
     public async void StartConsuming()
@@ -97,6 +100,8 @@ public class serviceKafkaConsumer
             );
 
             var zipArchiveBytes = await CreateZipArchive(excelDocuments);
+            
+            await _redisService.SetAsync($"zip-archive:{request.RequestId}", zipArchiveBytes);
         }
         catch (Exception ex)
         {

@@ -1,6 +1,7 @@
 using RATSP.Common.Interfaces;
 using RATSP.Common.Services;
 using RATSP.GrossService.Services;
+using StackExchange.Redis;
 
 namespace RATSP.GrossService;
 
@@ -16,7 +17,12 @@ public class Program
 
                 // Добавляем HttpClient для работы с API
                 services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7173") });
+                
+                services.AddSingleton<IConnectionMultiplexer>(sp =>
+                    ConnectionMultiplexer.Connect("localhost:6379"));
 
+                services.AddSingleton<IRedisService, RedisService>();
+                
                 services.AddTransient<ICompaniesService, CompaniesService>();
                 services.AddTransient<IFractionsService, FractionsService>();
                 services.AddTransient<ExcelService>();
@@ -27,10 +33,11 @@ public class Program
                     "localhost:9093",                        // BootstrapServers
                     "consumer-group-id",                     // GroupId
                     "excel-topic",                           // Topic
-                    sp.GetRequiredService<ExcelService>(),   // ExcelService
-                    sp.GetRequiredService<ExcelValuesService>(), // ExcelValuesService
-                    sp.GetRequiredService<ICompaniesService>(),  // ICompaniesService
-                    sp.GetRequiredService<IFractionsService>()   // IFractionsService
+                    sp.GetRequiredService<ExcelService>(),   
+                    sp.GetRequiredService<ExcelValuesService>(), 
+                    sp.GetRequiredService<ICompaniesService>(),  
+                    sp.GetRequiredService<IFractionsService>(),
+                    sp.GetRequiredService<IRedisService>()
                 ));
             })
             .Build();

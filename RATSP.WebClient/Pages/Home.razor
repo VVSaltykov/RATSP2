@@ -67,10 +67,10 @@
 </RadzenCard>
 
 <script>
-    function downloadZip(base64String) {
-        const link = document.createElement('a');
-        link.href = 'data:application/zip;base64,' + base64String;
-        link.download = 'files.zip';
+    function downloadFileFromStream(fileName, byteBase64) {
+        var link = document.createElement('a');
+        link.href = 'data:application/zip;base64,' + byteBase64;
+        link.download = fileName;
         link.click();
     }
 </script>
@@ -134,12 +134,11 @@
                 if (selectedFile.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                 {
                     var base64Workbook = stream.ToArray();
-                    
                     var selectedCompaniesNames = _selectedCompanies.Select(company => company.Name).ToList();
 
                     var createExcelRequest = new CreateExcelDocumentsRequest
                     {
-                        SelectedCompanies =  selectedCompaniesNames ,
+                        SelectedCompanies = selectedCompaniesNames,
                         SelectedDate = Convert.ToString(selectedDate),
                         GrossIn = GrossIn,
                         GrossOut = GrossOut,
@@ -149,15 +148,19 @@
                     };
 
                     var jsonMessage = JsonConvert.SerializeObject(createExcelRequest);
-                    
                     var content = new StringContent(jsonMessage, System.Text.Encoding.UTF8, "application/json");
 
                     using (var client = new HttpClient { BaseAddress = new Uri("https://localhost:7173") })
                     {
+                        client.Timeout = TimeSpan.FromMinutes(5);
                         var response = await client.PostAsync("api/kafka/publish", content);
+                        
                         if (response.IsSuccessStatusCode)
                         {
-                            Console.WriteLine("File uploaded successfully!");
+                            var byteArray = await response.Content.ReadAsByteArrayAsync();
+                            var base64String = Convert.ToBase64String(byteArray);
+        
+                            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "generated_documents.zip", base64String);
                         }
                         else
                         {
@@ -176,6 +179,7 @@
             }
         }
     }
+
 
     
     private static byte[] CreateZipFile(Dictionary<string, byte[]> files)
