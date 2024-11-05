@@ -8,7 +8,7 @@ WORKDIR /src
 COPY ["RATSP.GrossService/RATSP.GrossService.csproj", "RATSP.GrossService/"]
 COPY ["RATSP.Common/RATSP.Common.csproj", "RATSP.Common/"]
 COPY ["RATSP.WebCommon/RATSP.WebCommon.csproj", "RATSP.WebCommon/"]
-RUN dotnet restore "RATSP.GrossService/RATSP.GrossService.csproj"
+RUN dotnet restore "RATSP.GrossService/RATSP.GrossService.csproj" --disable-parallel
 COPY . .
 WORKDIR "/src/RATSP.GrossService"
 RUN dotnet build "RATSP.GrossService.csproj" -c $BUILD_CONFIGURATION -o /app/build
