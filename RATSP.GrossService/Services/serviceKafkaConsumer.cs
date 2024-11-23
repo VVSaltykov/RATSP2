@@ -19,16 +19,17 @@ public class serviceKafkaConsumer
     private readonly IFractionsService fractionsService;
     private readonly IRedisService _redisService;
 
-    public serviceKafkaConsumer(string bootstrapServers, string groupId, string topic, ExcelService _excelService,
+    public serviceKafkaConsumer(IConfiguration configuration, string groupId, string topic, ExcelService _excelService,
         ExcelValuesService _excelValuesService, ICompaniesService _companiesService, IFractionsService _fractionsService,
         IRedisService redisService)
     {
         var config = new ConsumerConfig
         {
-            BootstrapServers = bootstrapServers,
-            GroupId = groupId,
+            GroupId = configuration["Kafka:GroupId"],
+            BootstrapServers = configuration["Kafka:BootstrapServers"],
             AutoOffsetReset = AutoOffsetReset.Earliest
         };
+
 
         _consumer = new ConsumerBuilder<Null, string>(config).Build();
         _topic = topic;

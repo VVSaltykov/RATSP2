@@ -19,7 +19,17 @@ public class Program
                 services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7173") });
                 
                 services.AddSingleton<IConnectionMultiplexer>(sp =>
-                    ConnectionMultiplexer.Connect("localhost:6379"));
+                {
+                    var configuration = sp.GetRequiredService<IConfiguration>();
+                    var redisConnection = configuration.GetSection("Redis")["Connection"];
+                    
+                    // Create a ConfigurationOptions object
+                    var options = ConfigurationOptions.Parse(redisConnection);
+                    options.AbortOnConnectFail = false; // Set AbortOnConnectFail to false
+                    
+                    return ConnectionMultiplexer.Connect(redisConnection);
+                });
+
 
                 services.AddSingleton<IRedisService, RedisService>();
                 
@@ -30,7 +40,7 @@ public class Program
 
                 // Настройка Kafka Consumer с передачей всех необходимых зависимостей
                 services.AddSingleton(sp => new serviceKafkaConsumer(
-                    "localhost:9093",                        // BootstrapServers
+                    sp.GetRequiredService<IConfiguration>(),
                     "consumer-group-id",                     // GroupId
                     "excel-topic",                           // Topic
                     sp.GetRequiredService<ExcelService>(),   

@@ -31,9 +31,11 @@ public class Program
 
         builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
         {
-            var configuration = ConfigurationOptions.Parse("localhost:6379");
-            return ConnectionMultiplexer.Connect(configuration);
+            var configuration = sp.GetRequiredService<IConfiguration>();
+            var redisConnection = configuration.GetSection("Redis")["Connection"];
+            return ConnectionMultiplexer.Connect(redisConnection);
         });
+
 
         builder.Services.AddSingleton<IRedisService, RedisService>();
 
@@ -46,8 +48,7 @@ public class Program
         builder.Services.AddTransient<CompaniesRepository>();
         builder.Services.AddTransient<FractionRepository>();
 
-        builder.Services.AddSingleton<apiKafkaProducer>(sp =>
-            new apiKafkaProducer("localhost:9093"));
+        builder.Services.AddSingleton<apiKafkaProducer>();
 
         // Add services to the container.
         builder.Services.AddAuthorization();

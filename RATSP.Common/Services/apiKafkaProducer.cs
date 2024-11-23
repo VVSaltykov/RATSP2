@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using Microsoft.Extensions.Configuration;
 
 namespace RATSP.Common.Services;
 
@@ -6,10 +7,14 @@ public class apiKafkaProducer
 {
     private readonly IProducer<Null, string> _producer;
 
-    public apiKafkaProducer(string bootstrapServers)
+    public apiKafkaProducer(IConfiguration configuration)
     {
-        var config = new ProducerConfig { BootstrapServers = bootstrapServers };
+        var config = new ProducerConfig
+        {
+            BootstrapServers = configuration["Kafka:BootstrapServers"]
+        };
         _producer = new ProducerBuilder<Null, string>(config).Build();
+
     }
 
     public async Task SendMessageAsync(string topic, string message)
