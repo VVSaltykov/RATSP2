@@ -1,14 +1,14 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\vitya\\RiderProjects\\RATSP2\\",
+  "WorkspaceRootPath": "C:\\Users\\vitya\\OneDrive\\\u0420\u0430\u0431\u043E\u0447\u0438\u0439 \u0441\u0442\u043E\u043B\\\u041D\u043E\u0432\u0430\u044F \u043F\u0430\u043F\u043A\u0430 (4)\\RATSP2\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{BAD1ACC8-5415-4739-A348-FBE61FF54E94}|RATSP.GrossService\\RATSP.GrossService.csproj|c:\\users\\vitya\\riderprojects\\ratsp2\\ratsp.grossservice\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{BAD1ACC8-5415-4739-A348-FBE61FF54E94}|RATSP.GrossService\\RATSP.GrossService.csproj|solutionrelative:ratsp.grossservice\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vitya\\OneDrive\\\u0420\u0430\u0431\u043E\u0447\u0438\u0439 \u0441\u0442\u043E\u043B\\\u041D\u043E\u0432\u0430\u044F \u043F\u0430\u043F\u043A\u0430 (4)\\RATSP2\\RATSP.GrossService\\Dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:RATSP.GrossService\\Dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3F68F8BA-3C33-4E2B-B16B-5C6BB91DD481}|RATSP.API\\RATSP.API.csproj|c:\\users\\vitya\\riderprojects\\ratsp2\\ratsp.api\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{3F68F8BA-3C33-4E2B-B16B-5C6BB91DD481}|RATSP.API\\RATSP.API.csproj|solutionrelative:ratsp.api\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vitya\\OneDrive\\\u0420\u0430\u0431\u043E\u0447\u0438\u0439 \u0441\u0442\u043E\u043B\\\u041D\u043E\u0432\u0430\u044F \u043F\u0430\u043F\u043A\u0430 (4)\\RATSP2\\RATSP.API\\Dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:RATSP.API\\Dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,7 +18,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -29,12 +29,16 @@
               "Name": "ST:128:0:{13b12e3e-c1b4-4539-9371-4fe9a0d523fc}"
             },
             {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Dockerfile",
-              "DocumentMoniker": "C:\\Users\\vitya\\RiderProjects\\RATSP2\\RATSP.GrossService\\Dockerfile",
+              "DocumentMoniker": "C:\\Users\\vitya\\OneDrive\\\u0420\u0430\u0431\u043E\u0447\u0438\u0439 \u0441\u0442\u043E\u043B\\\u041D\u043E\u0432\u0430\u044F \u043F\u0430\u043F\u043A\u0430 (4)\\RATSP2\\RATSP.GrossService\\Dockerfile",
               "RelativeDocumentMoniker": "RATSP.GrossService\\Dockerfile",
-              "ToolTip": "C:\\Users\\vitya\\RiderProjects\\RATSP2\\RATSP.GrossService\\Dockerfile",
+              "ToolTip": "C:\\Users\\vitya\\OneDrive\\\u0420\u0430\u0431\u043E\u0447\u0438\u0439 \u0441\u0442\u043E\u043B\\\u041D\u043E\u0432\u0430\u044F \u043F\u0430\u043F\u043A\u0430 (4)\\RATSP2\\RATSP.GrossService\\Dockerfile",
               "RelativeToolTip": "RATSP.GrossService\\Dockerfile",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
@@ -45,14 +49,13 @@
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "Dockerfile",
-              "DocumentMoniker": "C:\\Users\\vitya\\RiderProjects\\RATSP2\\RATSP.API\\Dockerfile",
+              "DocumentMoniker": "C:\\Users\\vitya\\OneDrive\\\u0420\u0430\u0431\u043E\u0447\u0438\u0439 \u0441\u0442\u043E\u043B\\\u041D\u043E\u0432\u0430\u044F \u043F\u0430\u043F\u043A\u0430 (4)\\RATSP2\\RATSP.API\\Dockerfile",
               "RelativeDocumentMoniker": "RATSP.API\\Dockerfile",
-              "ToolTip": "C:\\Users\\vitya\\RiderProjects\\RATSP2\\RATSP.API\\Dockerfile",
+              "ToolTip": "C:\\Users\\vitya\\OneDrive\\\u0420\u0430\u0431\u043E\u0447\u0438\u0439 \u0441\u0442\u043E\u043B\\\u041D\u043E\u0432\u0430\u044F \u043F\u0430\u043F\u043A\u0430 (4)\\RATSP2\\RATSP.API\\Dockerfile",
               "RelativeToolTip": "RATSP.API\\Dockerfile",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-11-05T16:53:20.842Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-05T16:53:20.842Z"
             }
           ]
         }

@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\vitya\\RiderProjects\\RATSP2\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{BAD1ACC8-5415-4739-A348-FBE61FF54E94}|RATSP.GrossService\\RATSP.GrossService.csproj|c:\\users\\vitya\\riderprojects\\ratsp2\\ratsp.grossservice\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{BAD1ACC8-5415-4739-A348-FBE61FF54E94}|RATSP.GrossService\\RATSP.GrossService.csproj|solutionrelative:ratsp.grossservice\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{3F68F8BA-3C33-4E2B-B16B-5C6BB91DD481}|RATSP.API\\RATSP.API.csproj|c:\\users\\vitya\\riderprojects\\ratsp2\\ratsp.api\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{3F68F8BA-3C33-4E2B-B16B-5C6BB91DD481}|RATSP.API\\RATSP.API.csproj|solutionrelative:ratsp.api\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
     }
@@ -27,6 +31,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "Dockerfile",
+              "DocumentMoniker": "C:\\Users\\vitya\\RiderProjects\\RATSP2\\RATSP.GrossService\\Dockerfile",
+              "RelativeDocumentMoniker": "RATSP.GrossService\\Dockerfile",
+              "ToolTip": "C:\\Users\\vitya\\RiderProjects\\RATSP2\\RATSP.GrossService\\Dockerfile",
+              "RelativeToolTip": "RATSP.GrossService\\Dockerfile",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-11-05T18:37:14.806Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "Dockerfile",
               "DocumentMoniker": "C:\\Users\\vitya\\RiderProjects\\RATSP2\\RATSP.API\\Dockerfile",
               "RelativeDocumentMoniker": "RATSP.API\\Dockerfile",
