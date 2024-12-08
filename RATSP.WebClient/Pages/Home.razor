@@ -6,6 +6,7 @@
 @using RATSP.Common.Interfaces
 @using RATSP.Common.Models
 @using RATSP.WebCommon.Models
+@using RATSP.WebCommon.Utils
 @inject ICompaniesService ICompaniesService
 @inject IFractionsService IFractionService
 @inject IJSRuntime jsRuntime
@@ -57,7 +58,11 @@
                 </Template>
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="Company" Property="Name" Title="Название"/>
-            <RadzenDataGridColumn TItem="Company" Property="@nameof(Company.Participation)" Title="Участие в РАТСП" Width="150px"/>
+            <RadzenDataGridColumn Title="Участие в РАТСП" Width="150px">
+                <Template Context="data">
+                    @data.Participation.GetDisplayName()
+                </Template>
+            </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="Company" Property="@nameof(Company.INN)" Title="ИНН" />
         </Columns>
     </RadzenDataGrid>
