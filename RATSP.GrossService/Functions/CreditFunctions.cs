@@ -33,26 +33,27 @@ public static class CreditFunctions
         string text = $"Кредит - Нота \u2116 38-4-2023 от {formattedDate}";
     
         ExcelHelper.SetCellValue(sheet, 0, 1,
-            text, "Calibri", 11, (6.87, 14.3));
+            text, "Calibri", 11, (6.87, 14.3), isBold: true);
         
         ExcelHelper.SetCellValue(sheet, 1, 1,
             "к договору № Д-522111/11 от \"21\" ноября 2011 г.", "Calibri",
-            11, (6.87, 14.3));
+            11, (6.87, 14.3), isBold: true);
         
         ExcelHelper.SetCellValue(sheet, 3, 1,
-            $"{company.Name}", "Calibri", 11, (6.87, 14.3));
+            $"{company.Name}", "Calibri", 11, (6.87, 14.3), isBold: true);
         
         ExcelHelper.SetCellValue(sheet, 5, 1,
-            $"Период: {companyFraction.Start} - {companyFraction.End}", "Calibri", 11, (6.87, 14.3));
+            $"Период: {companyFraction.Start} - {companyFraction.End}", "Calibri", 11, (6.87, 14.3), isBold: true);
         
         ExcelHelper.SetCellValue(sheet, 7, 1,
-            "№", "Calibri", 10, (6.87, 40.1), applyBorders: true);
+            "№", "Calibri", 10, (6.87, 40.1), applyBorders: true, isBold: true, textCenter: true);
         
         ExcelHelper.SetCellValue(sheet, 7, 2,
-            "Позиция", "Calibri", 10, (43, 40.1), applyBorders: true);
+            "Позиция", "Calibri", 10, (43, 40.1), applyBorders: true, isBold: true, textCenter: true);
         
         ExcelHelper.SetCellValue(sheet, 7, 3,
-            "Сумма к перечислению в руб.", "Calibri", 10, (19.6, 40.1), applyBorders: true);
+            "Сумма к перечислению в руб.", "Calibri", 10, (19.6, 40.1), applyBorders: true,
+            isBold: true, wrapText: true, textCenter: true);
         
         ExcelHelper.SetCellValue(sheet, 8, 1,
             "1", "Calibri", 10, (6.87, 29), applyBorders: true);
@@ -139,7 +140,7 @@ public static class CreditFunctions
         reportingPerioudInsurerCommision = (reportingPerioudGross + previousPerioudGross) - (reportingPerioudNetPremium + previousPeriodNetPremium);
 
         ExcelHelper.SetCellValue(sheet, 9, 3,
-            $"{reportingPerioudGross + previousPerioudGross}", "Calibri", 10, (19.6, 29), applyBorders: true);
+            reportingPerioudGross + previousPerioudGross, "Calibri", 10, (19.6, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 10, 1,
             "1,2", "Calibri", 10, (6.87, 29), applyBorders: true);
@@ -149,7 +150,7 @@ public static class CreditFunctions
             "Calibri", 10, (43, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 10, 3,
-            $"{reportingPerioudInsurerCommision}", "Calibri", 10, (19.6, 29), applyBorders: true);
+            reportingPerioudInsurerCommision, "Calibri", 10, (19.6, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 11, 1,
             "1,3", "Calibri", 10, (6.87, 29), applyBorders: true);
@@ -159,7 +160,7 @@ public static class CreditFunctions
             "Calibri", 10, (43, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 11, 3,
-            $"{reportingPerioudNetPremium + previousPeriodNetPremium}", "Calibri", 10, (19.6, 29), applyBorders: true);
+            reportingPerioudNetPremium + previousPeriodNetPremium, "Calibri", 10, (19.6, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 12, 1,
             "2", "Calibri", 10, (6.87, 29), applyBorders: true);
@@ -281,10 +282,10 @@ public static class CreditFunctions
         }
         
         ExcelHelper.SetCellValue(sheet, 13, 3,
-            $"{sumGrossPremiumPaid}", "Calibri", 10, (19.6, 29), applyBorders: true);
+            sumGrossPremiumPaid, "Calibri", 10, (19.6, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 15, 3,
-            $"{sumNetPremiumPaid}", "Calibri", 10, (19.6, 29), applyBorders: true);
+            sumNetPremiumPaid, "Calibri", 10, (19.6, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 14, 1,
             "2,2", "Calibri", 10, (6.87, 29), applyBorders: true);
@@ -296,7 +297,7 @@ public static class CreditFunctions
         sumCommisionPaid = sumGrossPremiumPaid - sumNetPremiumPaid;
         
         ExcelHelper.SetCellValue(sheet, 14, 3,
-            $"{sumCommisionPaid}", "Calibri", 10, (19.6, 29), applyBorders: true);
+            sumCommisionPaid, "Calibri", 10, (19.6, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 16, 1,
             "3", "Calibri", 10, (6.87, 29), applyBorders: true);
@@ -316,7 +317,7 @@ public static class CreditFunctions
             "Calibri", 10, (43, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 17, 3,
-            $"{grossPremium}", "Calibri", 10, (19.6, 29), applyBorders: true);
+            grossPremium, "Calibri", 10, (19.6, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 18, 1,
             "3,2", "Calibri", 10, (6.87, 29), applyBorders: true);
@@ -328,7 +329,7 @@ public static class CreditFunctions
         commission = grossPremium - netPremium;
         
         ExcelHelper.SetCellValue(sheet, 18, 3,
-            $"{commission}", "Calibri", 10, (19.6, 29), applyBorders: true);
+            commission, "Calibri", 10, (19.6, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 19, 1,
             "3,3", "Calibri", 10, (6.87, 29), applyBorders: true);
@@ -338,99 +339,91 @@ public static class CreditFunctions
             "Calibri", 10, (43, 29), applyBorders: true);
         
         ExcelHelper.SetCellValue(sheet, 19, 3,
-            $"{netPremium}", "Calibri", 10, (19.6, 29), applyBorders: true);
+            netPremium, "Calibri", 10, (19.6, 29), applyBorders: true);
         
-        ExcelHelper.SetCellValue(sheet, 22, 1,
+        ExcelHelper.SetCellValue(sheet, 20, 1,
             "5,1", "Calibri", 10, (6.87, 29), applyBorders: true);
         
-        ExcelHelper.SetCellValue(sheet, 22, 2,
+        ExcelHelper.SetCellValue(sheet, 20, 2,
             "Итого:",
-            "Calibri", 10, (43, 29), applyBorders: true);
+            "Calibri", 10, (43, 29), applyBorders: true, isBold: true);
         
-        ExcelHelper.SetCellValue(sheet, 22, 3,
-            $"{sumNetPremiumPaid + netPremium}", "Calibri", 10, (19.6, 29), applyBorders: true);
+        ExcelHelper.SetCellValue(sheet, 20, 3,
+            sumNetPremiumPaid + netPremium, "Calibri", 10, (19.6, 29), applyBorders: true, isBold: true);
+        
+        ExcelHelper.SetCellValue(sheet, 23, 2,
+            "Итого к перечислению (рублей):",
+            "Calibri", 12, (43, 31.1), isBold: true);
+        
+        ExcelHelper.SetCellValue(sheet, 23, 3,
+            sumNetPremiumPaid + netPremium, "Calibri", 11, (19.6, 31.1), isBold: true);
         
         ExcelHelper.SetCellValue(sheet, 25, 1,
-            "Итого к перечислению комиссионного вознаграждения администратора (рублей):",
-            "Calibri", 11, (6.87, 31.1));
-        
-        ExcelHelper.SetCellValue(sheet, 25, 3,
-            $"{sumNetPremiumPaid + netPremium}", "Calibri", 11, (19.6, 31.1));
-        
-        ExcelHelper.SetCellValue(sheet, 27, 1,
             "Данная сумма будет перечислена на счет Вашей компании.",
-            "Calibri", 11, (6.87, 14.3));
+            "Calibri", 10, (6.87, 14.3), isBold: true);
+        
+        ExcelHelper.SetCellValue(sheet, 26, 1,
+            "Банковские реквизиты",
+            "Calibri", 10, (6.87, 14.3), isBold: true);
         
         ExcelHelper.SetCellValue(sheet, 28, 1,
-            "Банковские реквизиты",
-            "Calibri", 11, (6.87, 14.3));
-        
-        ExcelHelper.SetCellValue(sheet, 30, 1,
             $"{company.Name}",
-            "Calibri", 11, (6.87, 14.3));
+            "Calibri", 11, (6.87, 14.3), isBold: true);
         
-        ExcelHelper.SetCellValue(sheet, 31, 1,
+        ExcelHelper.SetCellValue(sheet, 29, 1,
             $"{company.INN}",
             "Calibri", 11, (6.87, 14.3));
         
-        ExcelHelper.SetCellValue(sheet, 32, 1,
+        ExcelHelper.SetCellValue(sheet, 30, 1,
             $"{company.KPP}",
             "Calibri", 11, (6.87, 14.3));
         
-        ExcelHelper.SetCellValue(sheet, 33, 1,
+        ExcelHelper.SetCellValue(sheet, 31, 1,
             $"{company.PC}",
             "Calibri", 11, (6.87, 14.3));
         
-        ExcelHelper.SetCellValue(sheet, 34, 1,
+        ExcelHelper.SetCellValue(sheet, 32, 1,
             $"{company.BankName}",
             "Calibri", 11, (6.87, 14.3));
         
-        ExcelHelper.SetCellValue(sheet, 35, 1,
+        ExcelHelper.SetCellValue(sheet, 33, 1,
             $"{company.BIK}",
             "Calibri", 11, (6.87, 14.3));
         
-        ExcelHelper.SetCellValue(sheet, 36, 1,
+        ExcelHelper.SetCellValue(sheet, 34, 1,
             $"{company.KC}",
             "Calibri", 11, (6.87, 14.3));
         
-        ExcelHelper.SetCellValue(sheet, 40, 1,
+        ExcelHelper.SetCellValue(sheet, 38, 1,
             "Администратор:",
-            "Calibri", 11, (6.87, 14.3));
+            "Calibri", 11, (6.87, 14.3), isBold: true);
         
-        ExcelHelper.SetCellValue(sheet, 40, 3,
+        ExcelHelper.SetCellValue(sheet, 38, 3,
             "Директор по перестрахованию",
-            "Calibri", 11, (19.6, 14.3));
+            "Calibri", 11, (19.6, 14.3), isBold: true);
         
-        ExcelHelper.SetCellValue(sheet, 41, 3,
+        ExcelHelper.SetCellValue(sheet, 39, 3,
             "ООО \"Индустриальный страховой брокер\"",
-            "Calibri", 11, (19.6, 14.3));
+            "Calibri", 11, (19.6, 14.3), isBold: true);
         
-        ExcelHelper.SetCellValue(sheet, 44, 3,
+        ExcelHelper.SetCellValue(sheet, 42, 3,
             "___________________   А.С. Кониль",
-            "Calibri", 11, (19.6, 14.3));
+            "Calibri", 11, (19.6, 14.3), isBold: true);
         
-        ExcelHelper.SetCellValue(sheet, 45, 3,
+        ExcelHelper.SetCellValue(sheet, 43, 3,
             "Доверенность б/н от 03.05.2023 г.",
-            "Calibri", 11, (19.6, 14.3));
+            "Calibri", 11, (19.6, 14.3), isBold: true);
         
-        ExcelHelper.SetCellValue(sheet, 49, 1,
+        ExcelHelper.SetCellValue(sheet, 47, 1,
             $"{company.Name}",
-            "Calibri", 11, (6.87, 14.3));
+            "Calibri", 11, (6.87, 14.3), isBold: true);
         
-        ExcelHelper.SetCellValue(sheet, 52, 3,
+        ExcelHelper.SetCellValue(sheet, 50, 3,
             "___________________",
-            "Calibri", 11, (19.6, 14.3));
+            "Calibri", 11, (19.6, 14.3), isBold: true);
         
-        // string imagePath = "~/wwwroot/Печать.png";
-        //
-        // byte[] bytes = File.ReadAllBytes(imagePath);
-        //
-        // int pictureIndex = workbook.AddPicture(bytes, PictureType.JPEG);
-        //
-        // IDrawing drawing = sheet.CreateDrawingPatriarch();
-        // IClientAnchor anchor = drawing.CreateAnchor(0, 0, 0, 0, 3, 38, 3, 47);
-        //
-        // IPicture picture = drawing.CreatePicture(anchor, pictureIndex);
-        // picture.Resize();
+        string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Images", "CAS.png");
+        
+        ImageHelper.AddImageToSheet(sheet, workbook, imagePath, 36, 3, 4);
     }
 }

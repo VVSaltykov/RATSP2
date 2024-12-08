@@ -1,7 +1,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using RATSP.API.Repositories;
+using RATSP.Common.Interfaces;
 using RATSP.Common.Services;
+using StackExchange.Redis;
 
 namespace RATSP.API;
 
@@ -10,12 +12,12 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        
+
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
             options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnection"));
         });
-        
+
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowSpecificOrigin",
@@ -27,17 +29,27 @@ public class Program
                 });
         });
 
+        builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+        {
+            var configuration = sp.GetRequiredService<IConfiguration>();
+            var redisConnection = configuration.GetSection("Redis")["Connection"];
+            return ConnectionMultiplexer.Connect(redisConnection);
+        });
+
+
+        builder.Services.AddSingleton<IRedisService, RedisService>();
+
+
         builder.Services.AddControllers().AddNewtonsoftJson(options =>
         {
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
         });
-        
+
         builder.Services.AddTransient<CompaniesRepository>();
         builder.Services.AddTransient<FractionRepository>();
-        
-        builder.Services.AddSingleton<KafkaProducer>(sp => 
-            new KafkaProducer("localhost:9093"));
-        
+
+        builder.Services.AddSingleton<apiKafkaProducer>();
+
         // Add services to the container.
         builder.Services.AddAuthorization();
 
@@ -46,7 +58,7 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
-        
+
         app.UseCors("AllowSpecificOrigin");
 
         // Configure the HTTP request pipeline.
@@ -57,11 +69,11 @@ public class Program
         }
 
         app.UseHttpsRedirection();
-        
+
         app.UseRouting();
 
         app.UseAuthorization();
-        
+
         app.MapControllers();
 
         app.Run();

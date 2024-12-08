@@ -9,4 +9,5 @@ public class CreateExcelDocumentsRequest
     public bool Debit { get; set; }
     public bool Credit { get; set; }
     public byte[] WorkbookBytes { get; set; }
+    public Guid? RequestId { get; set; }
 }

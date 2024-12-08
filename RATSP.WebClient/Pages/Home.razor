@@ -6,13 +6,14 @@
 @using RATSP.Common.Interfaces
 @using RATSP.Common.Models
 @using RATSP.WebCommon.Models
+@using RATSP.WebCommon.Utils
 @inject ICompaniesService ICompaniesService
 @inject IFractionsService IFractionService
 @inject IJSRuntime jsRuntime
 
 <RadzenCard Style="width: 100%; margin: 20px auto;">
     <RadzenContent>
-        <RadzenUpload Accept=".xls,.xlsx" Change="OnFileChange" />
+        <RadzenUpload Accept=".xls,.xlsx" Change="OnFileChange" ChooseText="Загрузите файл" />
         
         @if (fileSelected)
         {
@@ -57,7 +58,11 @@
                 </Template>
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="Company" Property="Name" Title="Название"/>
-            <RadzenDataGridColumn TItem="Company" Property="@nameof(Company.Participation)" Title="Участие в РАТСП" Width="150px"/>
+            <RadzenDataGridColumn Title="Участие в РАТСП" Width="150px">
+                <Template Context="data">
+                    @data.Participation.GetDisplayName()
+                </Template>
+            </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="Company" Property="@nameof(Company.INN)" Title="ИНН" />
         </Columns>
     </RadzenDataGrid>
@@ -67,10 +72,10 @@
 </RadzenCard>
 
 <script>
-    function downloadZip(base64String) {
-        const link = document.createElement('a');
-        link.href = 'data:application/zip;base64,' + base64String;
-        link.download = 'files.zip';
+    function downloadFileFromStream(fileName, byteBase64) {
+        var link = document.createElement('a');
+        link.href = 'data:application/zip;base64,' + byteBase64;
+        link.download = fileName;
         link.click();
     }
 </script>
@@ -82,7 +87,7 @@
         get { return selectedFile != null; }
         set {}
     }
-    
+
     private DateOnly selectedDate;
     private bool GrossIn;
     private bool GrossOut;
@@ -94,20 +99,24 @@
     private RadzenDataGrid<Company> companyGrid;
     private IEnumerable<Company> Companies { get; set; } = new List<Company>();
     private List<Fraction> Fractions { get; set; } = new List<Fraction>();
-    
+
     private List<ExcelValues> excelValuesList { get; set; } = new List<ExcelValues>();
-    
+
     protected override async Task OnInitializedAsync()
     {
-        Companies = await ICompaniesService.Read();
-
-        var fractionTasks = Companies.Select(company => IFractionService.ReadByCompany(company));
-        var fractionResults = await Task.WhenAll(fractionTasks);
-
-        foreach (var fractions in fractionResults)
+        try
         {
-            Fractions.AddRange(fractions);
+            Companies = await ICompaniesService.Read();
+
+            var fractionTasks = Companies.Select(company => IFractionService.ReadByCompany(company));
+            var fractionResults = await Task.WhenAll(fractionTasks);
+
+            foreach (var fractions in fractionResults)
+            {
+                Fractions.AddRange(fractions);
+            }
         }
+        catch (Exception ex){}
     }   
     
     private void OnFileChange(UploadChangeEventArgs args)
@@ -130,13 +139,11 @@
                 if (selectedFile.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                 {
                     var base64Workbook = stream.ToArray();
-                    
                     var selectedCompaniesNames = _selectedCompanies.Select(company => company.Name).ToList();
 
                     var createExcelRequest = new CreateExcelDocumentsRequest
                     {
-                        // Заполните необходимые поля
-                        SelectedCompanies =  selectedCompaniesNames ,
+                        SelectedCompanies = selectedCompaniesNames,
                         SelectedDate = Convert.ToString(selectedDate),
                         GrossIn = GrossIn,
                         GrossOut = GrossOut,
@@ -146,15 +153,19 @@
                     };
 
                     var jsonMessage = JsonConvert.SerializeObject(createExcelRequest);
-                    
                     var content = new StringContent(jsonMessage, System.Text.Encoding.UTF8, "application/json");
 
                     using (var client = new HttpClient { BaseAddress = new Uri("https://localhost:7173") })
                     {
+                        client.Timeout = TimeSpan.FromMinutes(5);
                         var response = await client.PostAsync("api/kafka/publish", content);
+                        
                         if (response.IsSuccessStatusCode)
                         {
-                            Console.WriteLine("File uploaded successfully!");
+                            var byteArray = await response.Content.ReadAsByteArrayAsync();
+                            var base64String = Convert.ToBase64String(byteArray);
+        
+                            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Бордеро.zip", base64String);
                         }
                         else
                         {
@@ -173,6 +184,7 @@
             }
         }
     }
+
 
     
     private static byte[] CreateZipFile(Dictionary<string, byte[]> files)

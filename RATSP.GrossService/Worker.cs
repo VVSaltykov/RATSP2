@@ -5,9 +5,9 @@ namespace RATSP.GrossService;
 public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
-    private readonly KafkaConsumer kafkaConsumer;
+    private readonly serviceKafkaConsumer kafkaConsumer;
 
-    public Worker(ILogger<Worker> logger, KafkaConsumer kafkaConsumer)
+    public Worker(ILogger<Worker> logger, serviceKafkaConsumer kafkaConsumer)
     {
         _logger = logger;
         this.kafkaConsumer = kafkaConsumer;

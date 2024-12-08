@@ -8,21 +8,32 @@
 @inject ICompaniesService ICompaniesService
 @layout MainLayout
 
-<RadzenButton Text="Создать компанию" Click="@OpenCreateDialog" />
+<RadzenButton Text="Создать долю" Click="@OpenCreateDialog" />
 
 @if (FractionsList.Any())
 {
-    <RadzenGrid Data="@FractionsList.GroupBy(f => f.Company.Name)" TItem="IGrouping<string, Fraction>">
+    <RadzenDataGrid Data="@FractionsList.GroupBy(f => f.Company.Name)"
+                    TItem="IGrouping<string, Fraction>"
+                    TableLayout="TableLayout.Fixed"
+                    Style="width: 100%; max-width: 1100px; overflow-x: auto; display: block;">
         <Columns>
-            <RadzenGridColumn TItem="IGrouping<string, Fraction>" Property="Key" Title="Компания" >
+            <!-- Первая колонка - статичная -->
+            <RadzenDataGridColumn TItem="IGrouping<string, Fraction>"
+                                  Property="Key"
+                                  Title="Компания"
+                                  Width="200px"
+                                  Frozen="true">
                 <Template Context="companyGroup">
                     @companyGroup.Key
                 </Template>
-            </RadzenGridColumn>
+            </RadzenDataGridColumn>
 
             @foreach (var dateRange in DateRanges)
             {
-                <RadzenGridColumn TItem="IGrouping<string, Fraction>" Title="@($"{dateRange.Start:yyyy-MM} - {dateRange.End:yyyy-MM}")">
+                <!-- Остальные колонки с фиксированной шириной -->
+                <RadzenDataGridColumn TItem="IGrouping<string, Fraction>"
+                                      Title="@($"{dateRange.Start:yyyy-MM} - {dateRange.End:yyyy-MM}")"
+                                      Width="150px">
                     <Template Context="companyGroup">
                         @{
                             var matchedFraction = companyGroup.FirstOrDefault(f => f.Start == dateRange.Start && f.End == dateRange.End);
@@ -32,15 +43,18 @@
                             @matchedFraction.Value
                         }
                     </Template>
-                </RadzenGridColumn>
+                </RadzenDataGridColumn>
             }
         </Columns>
-    </RadzenGrid>
+    </RadzenDataGrid>
+
+
 }
 else
 {
     <p>Нет данных для отображения.</p>
 }
+
 
 @code {
     private List<Fraction> FractionsList = new List<Fraction>();
