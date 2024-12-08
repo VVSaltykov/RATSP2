@@ -165,7 +165,7 @@
                             var byteArray = await response.Content.ReadAsByteArrayAsync();
                             var base64String = Convert.ToBase64String(byteArray);
         
-                            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "generated_documents.zip", base64String);
+                            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Бордеро.zip", base64String);
                         }
                         else
                         {

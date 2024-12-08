@@ -1,4 +1,5 @@
-﻿using System.IO.Compression;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.IO.Compression;
 using Confluent.Kafka;
 using Newtonsoft.Json;
 using NPOI.SS.UserModel;
@@ -51,10 +52,8 @@ public class serviceKafkaConsumer
                 var consumeResult = _consumer.Consume();
                 Console.WriteLine($"Received message: {consumeResult.Message.Value}");
 
-                // Десериализация сообщения
                 var createExcelRequest = JsonConvert.DeserializeObject<CreateExcelDocumentsRequest>(consumeResult.Message.Value);
                 
-                // Обработка запроса
                 await ProcessCreateExcelRequest(createExcelRequest);
             }
         }
@@ -100,7 +99,7 @@ public class serviceKafkaConsumer
                 credit
             );
 
-            var zipArchiveBytes = await CreateZipArchive(excelDocuments);
+            var zipArchiveBytes = await CreateZipArchiveAsync(excelDocuments);
             
             await _redisService.SetAsync($"zip-archive:{request.RequestId}", zipArchiveBytes);
         }
@@ -110,16 +109,28 @@ public class serviceKafkaConsumer
         }
     }
     
-    private async Task<byte[]> CreateZipArchive(List<byte[]> excelDocuments)
+    private async Task<byte[]> CreateZipArchiveAsync(List<(byte[] FileBytes, string FileName)> excelDocuments)
     {
+        if (excelDocuments == null || excelDocuments.Count == 0)
+        {
+            throw new ArgumentException("Список документов Excel не должен быть пустым.");
+        }
+
         using var memoryStream = new MemoryStream();
+
         using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
         {
-            for (int i = 0; i < excelDocuments.Count; i++)
+            foreach (var (fileBytes, fileName) in excelDocuments)
             {
-                var entry = archive.CreateEntry($"document_{i + 1}.xlsx", CompressionLevel.Fastest);
+                if (fileBytes == null || fileBytes.Length == 0)
+                {
+                    throw new InvalidOperationException($"Файл {fileName ?? "без имени"} отсутствует или пуст.");
+                }
+
+                var entry = archive.CreateEntry($"{fileName}.xlsx", CompressionLevel.Fastest);
                 using var entryStream = entry.Open();
-                await entryStream.WriteAsync(excelDocuments[i], 0, excelDocuments[i].Length);
+
+                await entryStream.WriteAsync(fileBytes, 0, fileBytes.Length);
             }
         }
 

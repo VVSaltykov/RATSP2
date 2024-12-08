@@ -9,19 +9,25 @@ namespace RATSP.GrossService.Services;
 
 public class ExcelService
 {
-    public Task<List<byte[]>> CreateExcelDocuments(List<ExcelValues> excelValuesList,
-        List<Company> selectedCompanies, List<Fraction> fractions,
-        DateOnly selectedDate, bool GrossIn, bool GrossOut, bool Debit, bool Credit)
+    public Task<List<(byte[] FileBytes, string FileName)>> CreateExcelDocuments(
+    List<ExcelValues> excelValuesList,
+    List<Company> selectedCompanies, 
+    List<Fraction> fractions,
+    DateOnly selectedDate, 
+    bool GrossIn, 
+    bool GrossOut, 
+    bool Debit, 
+    bool Credit)
     {
-        var excelByteArrays = new List<byte[]>();
-        
+        var excelFiles = new List<(byte[] FileBytes, string FileName)>();
+
         try
         {
             foreach (var company in selectedCompanies)
             {
                 using var memoryStream = new MemoryStream();
                 var workbook = new XSSFWorkbook();
-                
+
                 var companyFraction = fractions.FirstOrDefault(f => f.CompanyId == company.Id &&
                                                                     f.Start <= selectedDate && f.End >= selectedDate);
 
@@ -54,16 +60,24 @@ public class ExcelService
                         ISheet sheet = workbook.CreateSheet("Кредит-нота");
                         CreditFunctions.DrawingTable(workbook, sheet, excelValuesList, company, fractions, selectedDate);
                     }
-                    
+
+                    // Сохранение Excel-документа
                     workbook.Write(memoryStream);
-                    excelByteArrays.Add(memoryStream.ToArray());
+
+                    // Очистка имени компании для использования в имени файла
+                    var sanitizedFileName = company.Name.Replace("\"", "").Replace("'", "");
+
+                    // Добавляем в список файл и его имя
+                    excelFiles.Add((memoryStream.ToArray(), $"{sanitizedFileName}.xlsx"));
                 }
             }
         }
         catch (Exception ex)
         {
-            
+            // Логирование ошибки (не оставляйте пустой catch-блок!)
+            Console.WriteLine($"Ошибка при создании документов: {ex.Message}");
         }
-        return Task.FromResult(excelByteArrays);
+
+        return Task.FromResult(excelFiles);
     }
 }

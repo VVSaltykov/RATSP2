@@ -424,32 +424,6 @@ public static class CreditFunctions
         
         string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Images", "CAS.png");
         
-        AddImageToSheet(sheet, workbook, imagePath, 36);
-    }
-    
-    private static void AddImageToSheet(ISheet sheet, IWorkbook workbook, string imagePath, int rowCount)
-    {
-        // Загрузка изображения из файла
-        using (var stream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
-        {
-            byte[] imageBytes = new byte[stream.Length];
-            stream.Read(imageBytes, 0, (int)stream.Length);
-
-            // Получение индекса для изображения
-            int pictureIndex = workbook.AddPicture(imageBytes, PictureType.PNG);
-
-            // Создание объект для добавления изображения
-            IDrawing drawing = sheet.CreateDrawingPatriarch();
-            IClientAnchor anchor = workbook.GetCreationHelper().CreateClientAnchor();
-        
-            // Устанавливаем координаты для изображения
-            anchor.Col1 = 3; // Столбец, в который будет вставлено изображение
-            anchor.Row1 = rowCount; // Ряд, в котором будет вставлено изображение
-            anchor.Col2 = 4; // Конечный столбец (можно изменить)
-            anchor.Row2 = rowCount + 10; // Высота изображения, можно подстроить
-
-            // Добавление изображения в ячейку
-            drawing.CreatePicture(anchor, pictureIndex);
-        }
+        ImageHelper.AddImageToSheet(sheet, workbook, imagePath, 36, 3, 4);
     }
 }
